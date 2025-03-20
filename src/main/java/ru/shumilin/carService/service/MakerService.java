@@ -1,0 +1,39 @@
+package ru.shumilin.carService.service;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.shumilin.carService.entity.MakerEntity;
+import ru.shumilin.carService.exception.MakerNotFoundException;
+import ru.shumilin.carService.repository.MakerRepository;
+
+@Service
+@AllArgsConstructor
+public class MakerService {
+    private MakerRepository makerRepository;
+
+    public MakerEntity findById(Integer makerId) {
+        return makerRepository.findById(makerId).orElseThrow(
+                () -> new MakerNotFoundException(
+                        "Производитель с id " + makerId + " не найден"
+                )
+        );
+    }
+
+    public boolean save(MakerEntity makerEntity) {
+        makerRepository.save(makerEntity);
+        return makerRepository.existsById(makerEntity.getId());
+    }
+
+    public boolean delete(Integer makerId) {
+        makerRepository.deleteById(makerId);
+        return !makerRepository.existsById(makerId);
+    }
+
+    public MakerEntity findByName(String name) {
+        return makerRepository.findByName(name).orElseThrow(
+                () -> new MakerNotFoundException(
+                        "Производитель с именем " + name + " не найден"
+                )
+        );
+    }
+}

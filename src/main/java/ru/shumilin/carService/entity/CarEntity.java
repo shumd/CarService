@@ -11,14 +11,14 @@ import lombok.*;
 public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String licensePlate;
+    private Long id;
+    private String licensePlate;
     @OneToOne
     @JoinColumn(name = "maker")
-    MakerEntity maker;
-    String model;
-    Integer odometer;
+    private MakerEntity maker;
+    private String model;
+    private Integer odometer;
     @OneToOne
     @JoinColumn(name = "engineType")
-    EngineTypeEntity engineType;
+    private EngineTypeEntity engineType;
 }

@@ -3,30 +3,27 @@ package ru.shumilin.carService.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.shumilin.carService.service.MakerService;
 import ru.shumilin.carService.entity.MakerEntity;
-import ru.shumilin.carService.exception.MakerNotFoundException;
-import ru.shumilin.carService.repository.MakerRepository;
 
 @AllArgsConstructor
 @RequestMapping("/makers")
 @RestController
 public class MakerController {
-    private MakerRepository makerRepository;
+    private MakerService makerService;
 
     @GetMapping
     public MakerEntity getMaker(@RequestParam Integer id){
-        return makerRepository.findById(id).orElseThrow(() -> new MakerNotFoundException(
-                "Производитель с id = " + id + " не найден"
-        ));
+        return makerService.findById(id);
     }
 
     @PostMapping()
     public ResponseEntity<?> createMaker(@RequestBody MakerEntity maker){
         try{
-            makerRepository.save(maker);
+            makerService.save(maker);
             return ResponseEntity.ok("Производитель создан успешно");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Неудалось создать производителя");
+            return ResponseEntity.badRequest().body("Не удалось создать производителя");
         }
     }
 }

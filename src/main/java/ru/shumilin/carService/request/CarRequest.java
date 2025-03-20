@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class CarRequest {
     private String licensePlate;
-    private Integer makerId;
+    private String maker;
     private String model;
     private Integer odometer;
-    private Integer engineId;
+    private String engineType;
 }
