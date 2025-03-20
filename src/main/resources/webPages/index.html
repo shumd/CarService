@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="style.css" rel="stylesheet">
+    <title>Автосервис</title>
+</head>
+<body>
+    <button onclick="allCars()">getAllCars</button>
+    <div id="carList"></div>
+    <button id="clearButton" onclick="clearList()">clear</button>
+</body>
+
+<script>
+    function allCars(){
+        fetch("http://localhost:8080/cars/all")
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById("carList");
+                list.innerHTML = ""; // Очищаем список перед обновлением
+
+                data.forEach(car => {
+                    const li = document.createElement("li");
+                    li.textContent = car.maker.name + " " + car.model;
+
+                    list.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Ошибка загрузки машин:", error));
+    }
+
+    function clearList(){
+        const list = document.getElementById("carList");
+        list.innerHTML = "";
+    }
+
+</script>
+</html>

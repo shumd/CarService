@@ -1,7 +1,7 @@
-package ru.shumilin.carService.repository;
+package ru.shumilin.carService.car.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import ru.shumilin.carService.entity.MakerEntity;
+import ru.shumilin.carService.car.entity.MakerEntity;
 
 import java.util.Optional;
 

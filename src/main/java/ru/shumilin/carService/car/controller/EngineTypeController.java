@@ -1,4 +1,4 @@
-package ru.shumilin.carService.controller;
+package ru.shumilin.carService.car.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -6,13 +6,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.shumilin.carService.entity.EngineTypeEntity;
-import ru.shumilin.carService.repository.EngineTypeRepository;
-import ru.shumilin.carService.service.EngineTypeService;
+import ru.shumilin.carService.car.entity.EngineTypeEntity;
+import ru.shumilin.carService.car.service.EngineTypeService;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/engineType")
+@RequestMapping("/engineTypes")
 public class EngineTypeController{
     EngineTypeService engineTypeService;
 

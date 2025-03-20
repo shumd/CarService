@@ -1,4 +1,4 @@
-package ru.shumilin.carService.exception;
+package ru.shumilin.carService.car.exception;
 
 public class MakerNotFoundException extends EntityNotFoundException {
     public MakerNotFoundException(String message) {

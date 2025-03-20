@@ -1,4 +1,4 @@
-package ru.shumilin.carService.request;
+package ru.shumilin.carService.car.request;
 
 import lombok.Data;
 

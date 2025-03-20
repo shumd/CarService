@@ -1,10 +1,10 @@
-package ru.shumilin.carService.service;
+package ru.shumilin.carService.car.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.shumilin.carService.entity.MakerEntity;
-import ru.shumilin.carService.exception.MakerNotFoundException;
-import ru.shumilin.carService.repository.MakerRepository;
+import ru.shumilin.carService.car.entity.MakerEntity;
+import ru.shumilin.carService.car.exception.MakerNotFoundException;
+import ru.shumilin.carService.car.repository.MakerRepository;
 
 @Service
 @AllArgsConstructor

@@ -1,10 +1,10 @@
-package ru.shumilin.carService.controller;
+package ru.shumilin.carService.car.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.shumilin.carService.service.MakerService;
-import ru.shumilin.carService.entity.MakerEntity;
+import ru.shumilin.carService.car.service.MakerService;
+import ru.shumilin.carService.car.entity.MakerEntity;
 
 @AllArgsConstructor
 @RequestMapping("/makers")

@@ -1,10 +1,10 @@
-package ru.shumilin.carService.service;
+package ru.shumilin.carService.car.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.shumilin.carService.entity.EngineTypeEntity;
-import ru.shumilin.carService.exception.EngineTypeNotFoundException;
-import ru.shumilin.carService.repository.EngineTypeRepository;
+import ru.shumilin.carService.car.entity.EngineTypeEntity;
+import ru.shumilin.carService.car.exception.EngineTypeNotFoundException;
+import ru.shumilin.carService.car.repository.EngineTypeRepository;
 
 @AllArgsConstructor
 @Service

@@ -1,10 +1,13 @@
-package ru.shumilin.carService.service;
+package ru.shumilin.carService.car.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.shumilin.carService.entity.CarEntity;
-import ru.shumilin.carService.exception.CarNotFoundException;
-import ru.shumilin.carService.repository.CarRepository;
+import ru.shumilin.carService.car.entity.CarEntity;
+import ru.shumilin.carService.car.exception.CarNotFoundException;
+import ru.shumilin.carService.car.repository.CarRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -37,5 +40,11 @@ public class CarService {
                                 "Автомобиль с номером " + licensePlate + " не найден"
                         )
                 );
+    }
+
+    public List<CarEntity> findAll(){
+        List<CarEntity> res = new ArrayList<>();
+        carRepository.findAll().forEach(res::add);
+        return res;
     }
 }

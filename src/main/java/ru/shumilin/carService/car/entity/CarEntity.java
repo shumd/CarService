@@ -1,4 +1,4 @@
-package ru.shumilin.carService.entity;
+package ru.shumilin.carService.car.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,13 +12,14 @@ public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false)
     private String licensePlate;
-    @OneToOne
-    @JoinColumn(name = "maker")
+    @ManyToOne
+    @JoinColumn(name = "makerId")
     private MakerEntity maker;
     private String model;
     private Integer odometer;
-    @OneToOne
-    @JoinColumn(name = "engineType")
+    @ManyToOne
+    @JoinColumn(name = "engineTypeId")
     private EngineTypeEntity engineType;
 }
