@@ -24,6 +24,7 @@ public class ManagerEntity {
     @ManyToOne
     @JoinColumn(name = "work_status_id")
     private WorkStatusEntity workStatus;
+    @Column(unique = true)
     private String login;
     private String password;
 }

@@ -30,8 +30,12 @@ public class ManagerService {
         repo.deleteById(id);
     }
 
-    public boolean login(long id, String login, String password){
-        ManagerEntity manager = findById(id);
+    public boolean login(String login, String password){
+        ManagerEntity manager = repo.findByLogin(login).orElseThrow(
+                () -> new ManagerNotFoundException(
+                        "Менеджер с логином " + login + " не найден"
+                )
+        );
         return manager.getLogin().equals(login) &&
                 manager.getPassword().equals(password);
     }

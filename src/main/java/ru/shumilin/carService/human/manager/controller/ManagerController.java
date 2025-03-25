@@ -45,9 +45,8 @@ public class ManagerController {
     }
 
     @GetMapping("/login")
-    public boolean login(@RequestParam long id,
-            @RequestParam String l,
+    public boolean login(@RequestParam String l,
             @RequestParam String p){
-        return managerService.login(id,l,p);
+        return managerService.login(l,p);
     }
 }
