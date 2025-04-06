@@ -6,7 +6,7 @@ import ru.shumilin.carService.human.client.entity.ClientEntity;
 import ru.shumilin.carService.human.manager.entity.ManagerEntity;
 import ru.shumilin.carService.human.mechanic.entity.MechanicEntity;
 import ru.shumilin.carService.service.entity.ServiceEntity;
-import ru.shumilin.carService.serviceDeliveryStatus.ServiceDeliveryStatusEntity;
+import ru.shumilin.carService.serviceDeliveryStatus.entity.ServiceDeliveryStatusEntity;
 
 @Entity
 public class ServiceDeliveryEntity {

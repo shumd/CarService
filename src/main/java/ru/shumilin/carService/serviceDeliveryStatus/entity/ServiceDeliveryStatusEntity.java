@@ -1,4 +1,4 @@
-package ru.shumilin.carService.serviceDeliveryStatus;
+package ru.shumilin.carService.serviceDeliveryStatus.entity;
 
 import jakarta.persistence.*;
 
