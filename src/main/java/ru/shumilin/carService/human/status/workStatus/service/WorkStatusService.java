@@ -39,4 +39,8 @@ public class WorkStatusService {
         workStatusRepository.deleteById(id);
         return !workStatusRepository.existsById(id);
     }
+
+    public boolean existByStatus(String status){
+        return workStatusRepository.existsByStatus(status);
+    }
 }

@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ServiceDeliveryStatusRepository extends CrudRepository<ServiceDeliveryStatusEntity, Integer> {
     Optional<ServiceDeliveryStatusEntity> findByStatus(String status);
     void deleteByStatus(String status);
+    boolean existsByStatus(String status);
 }

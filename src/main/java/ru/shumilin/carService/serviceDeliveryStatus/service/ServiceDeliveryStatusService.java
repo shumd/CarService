@@ -34,4 +34,8 @@ public class ServiceDeliveryStatusService {
                 )
         );
     }
+
+    public boolean existsByStatus(String status){
+        return serviceDeliveryStatusRepository.existsByStatus(status);
+    }
 }
