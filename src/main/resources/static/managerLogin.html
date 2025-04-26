@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход для менеджеров</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .auth-form {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .auth-form h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+        .auth-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .auth-form input:invalid {
+            border-color: red;
+        }
+        .auth-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Изменен цвет кнопки */
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .auth-form button:hover {
+            background-color: #218838; /* Темнее при наведении */
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-form">
+    <h2>Вход для менеджеров</h2>
+    <form id="managerLoginForm">
+        <label for="login">Логин:</label>
+        <input
+                type="text"
+                id="login"
+                name="login"
+                placeholder="Введите логин"
+                required
+        >
+        <div id="loginError" class="error-message">Поле логина не может быть пустым</div>
+
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+
+        <button type="submit">Войти</button>
+        <div id="authError" class="error-message">Неверный логин или пароль</div>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('managerLoginForm');
+    const loginInput = document.getElementById('login');
+    const passwordInput = document.getElementById('password');
+    const loginError = document.getElementById('loginError');
+    const authError = document.getElementById('authError');
+
+    // Валидация при изменении значения в поле логина
+    loginInput.addEventListener('input', () => {
+        if (loginInput.value.trim()) {
+            loginError.style.display = 'none';
+        } else {
+            loginError.style.display = 'block';
+        }
+    });
+
+    // Обработка отправки формы
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+        // Скрываем сообщение об ошибке авторизации
+        authError.style.display = 'none';
+
+        // Проверка валидности полей
+        if (!loginInput.value.trim() || !passwordInput.value.trim()) {
+            loginError.style.display = 'block';
+            return;
+        }
+
+        // Получаем значения полей
+        const login = loginInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        try {
+            // Отправляем GET-запрос на сервер
+            const response = await fetch(`http://localhost:8080/managers/login?l=${encodeURIComponent(login)}&p=${encodeURIComponent(password)}`);
+
+            // Проверяем статус ответа
+            if (response.ok) {
+                const result = await response.json();
+
+                // Если авторизация успешна, переходим на страницу
+                if (result === true) {
+                    window.location.href = 'http://localhost:8080/manager-dashboard'; // Замените на нужный URL
+                } else {
+                    // Показываем сообщение об ошибке авторизации
+                    authError.style.display = 'block';
+                }
+            } else {
+                // Показываем сообщение об ошибке при проблемах с сервером
+                authError.textContent = 'Ошибка при отправке данных';
+                authError.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            authError.textContent = 'Произошла ошибка при отправке запроса';
+            authError.style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>

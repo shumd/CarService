@@ -25,6 +25,8 @@ public class ClientEntity {
     private NameEntity name;
     @Column(unique = true)
     private String phoneNumber;
+    @Column
+    private String password;
     @OneToMany
     @JoinColumn(name = "carId")
     private List<CarEntity> carEntities;

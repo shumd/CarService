@@ -10,4 +10,5 @@ public class ClientRequest {
     private String surname;
     private String patronymic;
     private String phone;
+    private String password;
 }

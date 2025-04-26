@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .auth-form {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        .auth-form h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+        .auth-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .auth-form input:invalid {
+            border-color: red;
+        }
+        .auth-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Зеленый цвет для кнопки */
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .auth-form button:hover {
+            background-color: #218838; /* Темнее при наведении */
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-form">
+    <h2>Регистрация</h2>
+    <form id="registerForm">
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name" placeholder="Введите имя" required>
+
+        <label for="surname">Фамилия:</label>
+        <input type="text" id="surname" name="surname" placeholder="Введите фамилию" required>
+
+        <label for="patronymic">Отчество:</label>
+        <input type="text" id="patronymic" name="patronymic" placeholder="Введите отчество">
+
+        <label for="phone">Номер телефона:</label>
+        <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="+7 (___) ___-__-__"
+                required
+                pattern="\+7\s?[\(]{0,1}[0-9]{3}[\)]{0,1}\s?\d{3}[-]?\d{2}[-]?\d{2}"
+                title="Введите номер телефона в формате +7 (XXX) XXX-XX-XX"
+        >
+        <div id="phoneError" class="error-message">Неверный формат номера телефона</div>
+
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+
+        <label for="confirmPassword">Подтвердите пароль:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Подтвердите пароль" required>
+        <div id="passwordError" class="error-message">Пароли не совпадают</div>
+
+        <button type="submit">Зарегистрироваться</button>
+        <div id="registerError" class="error-message">Ошибка при регистрации</div>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('registerForm');
+    const phoneInput = document.getElementById('phone');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const phoneError = document.getElementById('phoneError');
+    const passwordError = document.getElementById('passwordError');
+    const registerError = document.getElementById('registerError');
+
+    // Валидация при изменении значения в поле телефона
+    phoneInput.addEventListener('input', () => {
+        if (phoneInput.validity.valid) {
+            phoneError.style.display = 'none';
+        } else {
+            phoneError.style.display = 'block';
+        }
+    });
+
+    // Валидация совпадения паролей
+    confirmPasswordInput.addEventListener('input', () => {
+        if (passwordInput.value === confirmPasswordInput.value) {
+            passwordError.style.display = 'none';
+        } else {
+            passwordError.style.display = 'block';
+        }
+    });
+
+    // Обработка отправки формы
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+        // Скрываем сообщения об ошибках
+        phoneError.style.display = 'none';
+        passwordError.style.display = 'none';
+        registerError.style.display = 'none';
+
+        // Проверка валидности полей
+        if (!phoneInput.validity.valid) {
+            phoneError.style.display = 'block';
+            return;
+        }
+
+        if (passwordInput.value !== confirmPasswordInput.value) {
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Получаем значения полей
+        const name = document.getElementById('name').value.trim();
+        const surname = document.getElementById('surname').value.trim();
+        const patronymic = document.getElementById('patronymic').value.trim();
+        const phone = phoneInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        try {
+            // Отправляем POST-запрос на сервер
+            const response = await fetch('http://localhost:8080/clients', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    surname: surname,
+                    patronymic: patronymic,
+                    phone: phone,
+                    password: password
+                })
+            });
+
+            // Проверяем статус ответа
+            if (response.ok) {
+                window.location.href = 'http://localhost:8080/'; // Перенаправление на главную страницу
+            } else {
+                const errorData = await response.json(); // Получаем данные об ошибке
+                if (errorData.message && errorData.message.includes("Duplicate entry")) {
+                    registerError.textContent = 'Такой номер телефона уже зарегистрирован';
+                } else {
+                    registerError.textContent = 'Ошибка при регистрации';
+                }
+                registerError.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            registerError.textContent = 'Произошла ошибка при отправке запроса';
+            registerError.style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>

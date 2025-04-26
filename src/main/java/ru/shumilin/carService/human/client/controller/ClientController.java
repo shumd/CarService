@@ -16,11 +16,15 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientController {
     private ClientService clientService;
-    private NameService nameService;
 
     @PostMapping
     public ClientEntity saveClient(@RequestBody ClientRequest clientRequest) {
-        return clientService.save(toEntity(clientRequest));
+        return clientService.save(clientService.toEntity(clientRequest));
+    }
+
+    @DeleteMapping
+    public boolean deleteClientById(@RequestParam int id) {
+        return clientService.deleteById(id);
     }
 
     @GetMapping("/all")
@@ -36,16 +40,8 @@ public class ClientController {
         return clientService.findById(id);
     }
 
-    private ClientEntity toEntity(ClientRequest clientRequest) {
-        NameEntity nameEntity = NameEntity.builder()
-                .name(clientRequest.getName())
-                .patronymic(clientRequest.getPatronymic())
-                .surname(clientRequest.getSurname())
-                .build();
-
-        return ClientEntity.builder()
-                .name(nameService.save(nameEntity))
-                .phoneNumber(clientRequest.getPhone())
-                .build();
+    @GetMapping("/auth")
+    public boolean auth(@RequestParam String phoneNumber, @RequestParam String password) {
+        return clientService.login(phoneNumber, password);
     }
 }
