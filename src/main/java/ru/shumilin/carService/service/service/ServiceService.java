@@ -6,10 +6,19 @@ import ru.shumilin.carService.service.entity.ServiceEntity;
 import ru.shumilin.carService.service.exception.ServiceNotFoundException;
 import ru.shumilin.carService.service.repository.ServiceRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class ServiceService {
     private ServiceRepository serviceRepository;
+
+    public List<ServiceEntity> findAll() {
+        List<ServiceEntity> result = new ArrayList<>();
+        serviceRepository.findAll().forEach(result::add);
+        return result;
+    }
 
     public ServiceEntity findById(int id){
         return serviceRepository.findById(id).orElseThrow(

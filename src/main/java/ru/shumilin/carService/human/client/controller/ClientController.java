@@ -1,12 +1,15 @@
 package ru.shumilin.carService.human.client.controller;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.shumilin.carService.car.entity.CarEntity;
 import ru.shumilin.carService.human.client.entity.ClientEntity;
+import ru.shumilin.carService.human.client.exception.ClientNotFoundException;
 import ru.shumilin.carService.human.client.request.ClientRequest;
 import ru.shumilin.carService.human.client.service.ClientService;
-import ru.shumilin.carService.human.name.entity.NameEntity;
-import ru.shumilin.carService.human.name.service.NameService;
+
 
 import java.util.List;
 
@@ -20,6 +23,11 @@ public class ClientController {
     @PostMapping
     public ClientEntity saveClient(@RequestBody ClientRequest clientRequest) {
         return clientService.save(clientService.toEntity(clientRequest));
+    }
+
+    @GetMapping("/car/{id}")
+    public List<CarEntity> getClientsCars(@PathVariable int id) {
+        return clientService.getCarsById(id);
     }
 
     @DeleteMapping
@@ -40,8 +48,32 @@ public class ClientController {
         return clientService.findById(id);
     }
 
+    @PostMapping("/car")
+    public CarEntity addCar(@RequestParam String licensePlate, @RequestParam int clientId) {
+        return clientService.addCar(licensePlate, clientId);
+    }
+
     @GetMapping("/auth")
-    public boolean auth(@RequestParam String phoneNumber, @RequestParam String password) {
-        return clientService.login(phoneNumber, password);
+    public boolean auth(@RequestParam String phoneNumber, @RequestParam String password, HttpSession session) {
+        if (clientService.login(phoneNumber, password)){
+            session.setAttribute("phoneNumber", phoneNumber);
+            return true;
+        }
+        return false;
+    }
+
+    @GetMapping("/profile")
+    public ClientEntity profile(HttpSession session) {
+        try {
+            return clientService.findByPhone((String) session.getAttribute("phoneNumber"));
+        } catch (ClientNotFoundException e) {
+            throw new RuntimeException("session is null");
+        }
+    }
+
+    @PostMapping("/logout")
+    public boolean logout(HttpSession session) {
+        session.removeAttribute("client");
+        return true;
     }
 }

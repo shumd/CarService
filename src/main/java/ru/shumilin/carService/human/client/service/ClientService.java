@@ -1,7 +1,10 @@
 package ru.shumilin.carService.human.client.service;
 
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.stereotype.Service;
+import ru.shumilin.carService.car.entity.CarEntity;
+import ru.shumilin.carService.car.service.CarService;
 import ru.shumilin.carService.human.client.entity.ClientEntity;
 import ru.shumilin.carService.human.client.exception.ClientNotFoundException;
 import ru.shumilin.carService.human.client.repository.ClientRepository;
@@ -18,6 +21,7 @@ import java.util.List;
 public class ClientService {
     private final ClientRepository clientRepository;
     private final NameService nameService;
+    private final CarService carService;
 
     public boolean deleteById(int id){
         clientRepository.deleteById(id);
@@ -28,6 +32,10 @@ public class ClientService {
         List<ClientEntity> clientEntities = new ArrayList<>();
         clientRepository.findAll().forEach(clientEntities::add);
         return clientEntities;
+    }
+
+    public List<CarEntity> getCarsById(int id){
+        return findById(id).getCarEntities().stream().peek(System.out::println).toList();
     }
 
     public ClientEntity findById(int id){
@@ -55,6 +63,14 @@ public class ClientService {
         );
         return client.getPhoneNumber().equals(phoneNumber) &&
                 client.getPassword().equals(password);
+    }
+
+    @Transactional
+    public CarEntity addCar(String licensePlate, int clientId){
+        CarEntity carEntity = carService.findByLicensePlate(licensePlate);
+        ClientEntity clientEntity = findById(clientId);
+        clientEntity.addCar(carEntity);
+        return carEntity;
     }
 
     public ClientEntity toEntity(ClientRequest clientRequest) {

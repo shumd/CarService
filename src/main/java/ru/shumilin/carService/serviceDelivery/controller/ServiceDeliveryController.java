@@ -6,6 +6,8 @@ import ru.shumilin.carService.serviceDelivery.entity.ServiceDeliveryEntity;
 import ru.shumilin.carService.serviceDelivery.request.ServiceDeliveryRequest;
 import ru.shumilin.carService.serviceDelivery.service.ServiceDeliveryService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/serviceDelivery")
 @AllArgsConstructor
@@ -15,6 +17,11 @@ public class ServiceDeliveryController {
     @GetMapping("/id")
     public ServiceDeliveryEntity findById(@RequestParam int id) {
         return serviceDeliveryService.findById(id);
+    }
+
+    @GetMapping("/{status}")
+    public List<ServiceDeliveryEntity> findByStatus(@PathVariable String status) {
+        return serviceDeliveryService.findByServiceDeliveryStatus(status);
     }
 
     @GetMapping("/clientId")

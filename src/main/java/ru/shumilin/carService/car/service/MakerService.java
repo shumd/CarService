@@ -6,10 +6,19 @@ import ru.shumilin.carService.car.entity.MakerEntity;
 import ru.shumilin.carService.car.exception.MakerNotFoundException;
 import ru.shumilin.carService.car.repository.MakerRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class MakerService {
     private MakerRepository makerRepository;
+
+    public List<MakerEntity> findAll(){
+        List<MakerEntity> res = new ArrayList<>();
+        makerRepository.findAll().forEach(res::add);
+        return res;
+    }
 
     public MakerEntity findById(Integer makerId) {
         return makerRepository.findById(makerId).orElseThrow(

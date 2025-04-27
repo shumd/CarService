@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.shumilin.carService.service.entity.ServiceEntity;
 import ru.shumilin.carService.service.service.ServiceService;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
-@RequestMapping("/service")
+@RequestMapping("/services")
 @AllArgsConstructor
 public class ServiceController {
     private ServiceService serviceService;
@@ -20,6 +22,11 @@ public class ServiceController {
     @GetMapping("/name")
     public ServiceEntity findByName(@RequestParam String name) {
         return serviceService.findByName(name);
+    }
+
+    @GetMapping("/all")
+    public List<ServiceEntity> findAll() {
+        return serviceService.findAll();
     }
 
     @PostMapping

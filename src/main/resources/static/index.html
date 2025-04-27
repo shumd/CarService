@@ -1,41 +1,195 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="style.css" rel="stylesheet">
-    <title>Автосервис</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запись на ТО</title>
+    <style>
+        /* Стили для навбара */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+        }
+
+        /* Стили для контейнера формы */
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .form-group button:hover {
+            background-color: #575757;
+        }
+
+        /* Приветствие */
+        .greeting {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <button onclick="allCars()">getAllCars</button>
-    <div id="carList"></div>
-    <button id="clearButton" onclick="clearList()">clear</button>
-</body>
+
+<!-- Навбар -->
+<div class="navbar">
+    <a href="http://localhost:8080/profile">Профиль</a>
+    <a href="http://localhost:8080/">Запись на ТО</a>
+</div>
+
+<!-- Контейнер для приветствия или формы -->
+<div class="container">
+    <div id="greeting" class="greeting"></div>
+    <h2>Запись на ТО</h2>
+    <form id="serviceForm" action="#" method="POST">
+        <div class="form-group">
+            <label for="car">Автомобиль:</label>
+            <select id="car" name="car" required>
+                <option value="">Выберите автомобиль</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="service-type">Тип услуги:</label>
+            <select id="service-type" name="service-type" required>
+                <option value="">Выберите услугу</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button type="submit">Записаться</button>
+        </div>
+    </form>
+</div>
 
 <script>
-    function allCars(){
-        fetch("http://localhost:8080/cars/all")
-            .then(response => response.json())
-            .then(data => {
-                const list = document.getElementById("carList");
-                list.innerHTML = ""; // Очищаем список перед обновлением
+    // Функция для получения данных профиля
+    async function fetchProfile() {
+        try {
+            const response = await fetch('http://localhost:8080/clients/profile');
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (errorData.message === 'session is null') {
+                    // Перенаправление на страницу авторизации
+                    window.location.href = 'http://localhost:8080/auth';
+                    return;
+                }
+                throw new Error('Ошибка при получении профиля');
+            }
 
-                data.forEach(car => {
-                    const li = document.createElement("li");
-                    li.textContent = car.maker.name + " " + car.model + " " + car.licensePlate;
+            const profileData = await response.json();
+            const fullName = `${profileData.name.surname} ${profileData.name.name} ${profileData.name.patronymic}`;
+            document.getElementById('greeting').innerText = `Привет, ${fullName}!`;
 
-                    list.appendChild(li);
+            // Загрузка автомобилей в выпадающий список
+            const carSelect = document.getElementById('car');
+            if (profileData.carEntities.length > 0) {
+                profileData.carEntities.forEach(car => {
+                    const option = document.createElement('option');
+                    option.value = car.id;
+                    option.textContent = `${car.maker.name} ${car.model} (${car.licensePlate})`;
+                    carSelect.appendChild(option);
                 });
-            })
-            .catch(error => console.error("Ошибка загрузки машин:", error));
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Нет доступных автомобилей';
+                carSelect.appendChild(option);
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить профиль. Попробуйте позже.');
+        }
     }
 
-    function clearList(){
-        const list = document.getElementById("carList");
-        list.innerHTML = "";
+    // Функция для получения типов услуг
+    async function fetchServices() {
+        try {
+            const response = await fetch('http://localhost:8080/services/all');
+            if (!response.ok) {
+                throw new Error('Ошибка при получении списка услуг');
+            }
+
+            const services = await response.json();
+            const serviceSelect = document.getElementById('service-type');
+
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = `${service.name} (${service.price} руб.)`;
+                serviceSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить список услуг. Попробуйте позже.');
+        }
     }
 
+    // Загрузка данных при открытии страницы
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchProfile();
+        fetchServices();
+    });
 </script>
+
+</body>
 </html>

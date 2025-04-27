@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль пользователя</title>
+    <style>
+        /* Стили для навбара */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        .navbar a:hover {
+            background-color: #575757;
+        }
+        /* Стили для контейнера профиля */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background-color: #333;
+            color: white;
+        }
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .no-data {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+        }
+        /* Стили для формы добавления автомобиля */
+        .add-car-form {
+            display: none; /* Форма скрыта по умолчанию */
+            margin-top: 20px;
+        }
+        .add-car-form div {
+            margin-bottom: 10px;
+        }
+        .add-car-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .add-car-form input,
+        .add-car-form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .add-car-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .add-car-form button:hover {
+            background-color: #575757;
+        }
+        /* Стиль кнопки "Добавить автомобиль" */
+        #addCarButton {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        #addCarButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<!-- Навбар -->
+<div class="navbar">
+    <a href="http://localhost:8080/profile">Профиль</a>
+    <a href="http://localhost:8080/">Запись на ТО</a>
+</div>
+<!-- Контейнер для контента -->
+<div class="container">
+    <h1>Профиль пользователя</h1>
+    <!-- Информация о пользователе -->
+    <div class="profile-info" id="profileInfo">
+        <!-- Здесь будет отображаться ФИО -->
+    </div>
+    <!-- Список машин -->
+    <div class="section">
+        <h2>Машины</h2>
+        <table id="carsTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Госномер</th>
+                <th>Марка</th>
+                <th>Модель</th>
+                <th>Пробег</th>
+                <th>Тип двигателя</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Здесь будут отображаться машины -->
+            </tbody>
+        </table>
+        <div class="no-data" id="noCarsMessage">Нет данных о машинах.</div>
+    </div>
+    <!-- Кнопка "Добавить автомобиль" -->
+    <button id="addCarButton">Добавить автомобиль</button>
+    <!-- Форма добавления автомобиля -->
+    <div class="add-car-form" id="addCarForm">
+        <div>
+            <label for="licensePlate">Госномер:</label>
+            <input type="text" id="licensePlate" placeholder="Введите госномер" required>
+        </div>
+        <div>
+            <label for="maker">Марка:</label>
+            <input type="text" id="maker" placeholder="Введите марку" required>
+        </div>
+        <div>
+            <label for="model">Модель:</label>
+            <input type="text" id="model" placeholder="Введите модель" required>
+        </div>
+        <div>
+            <label for="odometer">Пробег (км):</label>
+            <input type="number" id="odometer" placeholder="Введите пробег" required>
+        </div>
+        <div>
+            <label for="engineType">Тип двигателя:</label>
+            <select id="engineType" required>
+                <option value="">Выберите тип двигателя</option>
+            </select>
+        </div>
+        <div>
+            <button id="submitCarButton">Добавить машину</button>
+        </div>
+    </div>
+    <!-- Список заказов -->
+    <div class="section">
+        <h2>Заказы</h2>
+        <table id="ordersTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Дата</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Здесь будут отображаться заказы -->
+            </tbody>
+        </table>
+        <div class="no-data" id="noOrdersMessage">Нет данных о заказах.</div>
+    </div>
+</div>
+<script>
+    let clientId = null; // Глобальная переменная для хранения ID клиента
+
+    // Функция для загрузки профиля
+    async function loadProfile() {
+        try {
+            const response = await fetch('http://localhost:8080/clients/profile');
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке профиля');
+            }
+            const profileData = await response.json();
+
+            // Сохраняем clientId
+            clientId = profileData.id;
+
+            // Отображение ФИО
+            const fullName = `${profileData.name.surname} ${profileData.name.name} ${profileData.name.patronymic}`;
+            document.getElementById('profileInfo').innerHTML = `
+        <p><strong>ФИО:</strong> ${fullName}</p>
+        <p><strong>Телефон:</strong> ${profileData.phoneNumber}</p>
+      `;
+
+            // Отображение списка машин
+            const carsTableBody = document.querySelector('#carsTable tbody');
+            if (profileData.carEntities.length > 0) {
+                carsTableBody.innerHTML = ''; // Очистить таблицу
+                profileData.carEntities.forEach(car => {
+                    const row = `
+            <tr>
+              <td>${car.id}</td>
+              <td>${car.licensePlate}</td>
+              <td>${car.maker.name}</td>
+              <td>${car.model}</td>
+              <td>${car.odometer}</td>
+              <td>${car.engineType.type}</td>
+            </tr>
+          `;
+                    carsTableBody.insertAdjacentHTML('beforeend', row);
+                });
+                document.getElementById('noCarsMessage').style.display = 'none'; // Скрыть сообщение "нет данных"
+            } else {
+                carsTableBody.innerHTML = ''; // Очистить таблицу
+                document.getElementById('noCarsMessage').style.display = 'block'; // Показать сообщение "нет данных"
+            }
+
+            // Отображение списка заказов
+            const ordersTableBody = document.querySelector('#ordersTable tbody');
+            if (profileData.serviceDeliveryEntities.length > 0) {
+                ordersTableBody.innerHTML = ''; // Очистить таблицу
+                profileData.serviceDeliveryEntities.forEach(order => {
+                    const row = `
+            <tr>
+              <td>${order.id}</td>
+              <td>${order.date}</td>
+              <td>${order.status}</td>
+            </tr>
+          `;
+                    ordersTableBody.insertAdjacentHTML('beforeend', row);
+                });
+                document.getElementById('noOrdersMessage').style.display = 'none'; // Скрыть сообщение "нет данных"
+            } else {
+                ordersTableBody.innerHTML = ''; // Очистить таблицу
+                document.getElementById('noOrdersMessage').style.display = 'block'; // Показать сообщение "нет данных"
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить профиль. Попробуйте позже.');
+        }
+    }
+
+    // Загрузка типов двигателей
+    async function loadEngineTypes() {
+        try {
+            const response = await fetch('http://localhost:8080/engineTypes/all');
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке типов двигателей');
+            }
+            const engineTypes = await response.json();
+            const engineTypeSelect = document.getElementById('engineType');
+            engineTypes.forEach(engineType => {
+                const option = document.createElement('option');
+                option.value = engineType.type; // Используем текстовое значение
+                option.textContent = engineType.type;
+                engineTypeSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить типы двигателей. Попробуйте позже.');
+        }
+    }
+
+    // Добавление нового автомобиля
+    async function addCar(event) {
+        event.preventDefault();
+        const licensePlate = document.getElementById('licensePlate').value;
+        const maker = document.getElementById('maker').value;
+        const model = document.getElementById('model').value;
+        const odometer = document.getElementById('odometer').value;
+        const engineTypeText = document.getElementById('engineType').value;
+
+        if (!licensePlate || !maker || !model || !odometer || !engineTypeText) {
+            alert('Пожалуйста, заполните все поля.');
+            return;
+        }
+
+        try {
+            // Шаг 1: Создание автомобиля
+            const createCarResponse = await fetch('http://localhost:8080/cars', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    licensePlate,
+                    maker,
+                    model,
+                    odometer: parseInt(odometer),
+                    engineType: engineTypeText,
+                }),
+            });
+
+            if (!createCarResponse.ok) {
+                throw new Error('Ошибка при создании автомобиля');
+            }
+
+            // Шаг 2: Привязка автомобиля к пользователю
+            const assignCarResponse = await assignCarToClient(licensePlate, clientId);
+
+            if (!assignCarResponse) {
+                throw new Error('Ошибка при привязке автомобиля');
+            }
+
+            alert('Автомобиль успешно добавлен и привязан к пользователю!');
+            document.getElementById('addCarForm').style.display = 'none'; // Скрываем форму
+            loadProfile(); // Обновляем список автомобилей
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось добавить автомобиль. Попробуйте позже.');
+        }
+    }
+
+    // Функция для привязки автомобиля к пользователю
+    async function assignCarToClient(licensePlate, clientId) {
+        try {
+            const requestBody = {
+                licensePlate,
+                clientId,
+            };
+
+            // Отправляем POST-запрос с телом
+            const response = await fetch('http://localhost:8080/clients/car?licensePlate='+licensePlate+'&clientId='+clientId,{method: 'POST'});
+
+            if (!response.ok) {
+                throw new Error(`Ошибка при привязке автомобиля: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось привязать автомобиль. Попробуйте позже.');
+            return null;
+        }
+    }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProfile();
+        loadEngineTypes();
+
+        // Показать/скрыть форму добавления автомобиля
+        const addCarButton = document.getElementById('addCarButton');
+        const addCarForm = document.getElementById('addCarForm');
+        addCarButton.addEventListener('click', () => {
+            addCarForm.style.display = addCarForm.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Обработка отправки формы
+        const submitCarButton = document.getElementById('submitCarButton');
+        submitCarButton.addEventListener('click', addCar);
+    });
+</script>
+</body>
+</html>

@@ -13,6 +13,8 @@ import ru.shumilin.carService.serviceDelivery.repository.ServiceDeliveryReposito
 import ru.shumilin.carService.serviceDelivery.request.ServiceDeliveryRequest;
 import ru.shumilin.carService.serviceDeliveryStatus.service.ServiceDeliveryStatusService;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class ServiceDeliveryService {
@@ -25,6 +27,9 @@ public class ServiceDeliveryService {
     private MechanicService mechanicService;
     private ManagerService managerService;
 
+    public List<ServiceDeliveryEntity> findByServiceDeliveryStatus(String statusName){
+        return serviceDeliveryRepository.findAllByServiceDeliveryStatus(serviceDeliveryStatusService.findByStatus(statusName));
+    }
 
     public ServiceDeliveryEntity findById(int id) {
         return serviceDeliveryRepository.findById(id).orElseThrow(

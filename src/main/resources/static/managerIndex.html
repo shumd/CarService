@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель менеджера</title>
+    <style>
+        /* Стили для навбара */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+        }
+
+        /* Стили для контейнера контента */
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Стили для таблицы */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #333;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Кнопки действий */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .action-buttons .approve {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .action-buttons .reject {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Навбар -->
+<div class="navbar">
+    <a href="#requests">Заявки</a>
+    <a href="#services">Услуги</a>
+    <a href="#mechanics">Механики</a>
+</div>
+
+<!-- Контейнер для контента -->
+<div class="container">
+    <h2>Список заявок</h2>
+
+    <!-- Таблица заявок -->
+    <table id="requestsTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>ФИО клиента</th>
+            <th>Телефон</th>
+            <th>Модель автомобиля</th>
+            <th>Дата записи</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Пример данных -->
+        <tr>
+            <td>1</td>
+            <td>Иванов Иван Иванович</td>
+            <td>+79001234567</td>
+            <td>Toyota Camry</td>
+            <td>2023-10-15</td>
+            <td>Новая</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="approve">Подтвердить</button>
+                    <button class="reject">Отклонить</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Петров Петр Петрович</td>
+            <td>+79009876543</td>
+            <td>Honda Civic</td>
+            <td>2023-10-16</td>
+            <td>Новая</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="approve">Подтвердить</button>
+                    <button class="reject">Отклонить</button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Пример обработки кнопок действий
+    document.addEventListener('DOMContentLoaded', () => {
+        const approveButtons = document.querySelectorAll('.approve');
+        const rejectButtons = document.querySelectorAll('.reject');
+
+        approveButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const row = button.closest('tr');
+                const clientId = row.querySelector('td:first-child').innerText;
+                alert(`Заявка ID ${clientId} подтверждена.`);
+                // Здесь можно отправить запрос на сервер для обновления статуса
+            });
+        });
+
+        rejectButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const row = button.closest('tr');
+                const clientId = row.querySelector('td:first-child').innerText;
+                alert(`Заявка ID ${clientId} отклонена.`);
+                // Здесь можно отправить запрос на сервер для обновления статуса
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

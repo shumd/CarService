@@ -21,15 +21,21 @@ public class ClientEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "nameId")
+    @JoinColumn
     private NameEntity name;
     @Column(unique = true)
     private String phoneNumber;
     @Column
     private String password;
     @OneToMany
-    @JoinColumn(name = "carId")
+    @JoinColumn
     private List<CarEntity> carEntities;
     @OneToMany
     private List<ServiceDeliveryEntity> serviceDeliveryEntities;
+
+    public void addCar(CarEntity car) {
+        if(!carEntities.contains(car)) {
+            carEntities.add(car);
+        }else throw new RuntimeException("This car already exists");
+    }
 }

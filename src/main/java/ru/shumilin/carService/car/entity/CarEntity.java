@@ -2,6 +2,7 @@ package ru.shumilin.carService.car.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.shumilin.carService.human.client.entity.ClientEntity;
 
 @Entity(name = "Car")
 @NoArgsConstructor

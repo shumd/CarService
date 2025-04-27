@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class PageController {
     @GetMapping
-    @RequestMapping("/")
+    @RequestMapping("/auth")
     public String login() {
         return "auth.html";
     }
@@ -19,7 +19,19 @@ public class PageController {
     }
 
     @GetMapping
-    @RequestMapping("/index")
+    @RequestMapping("/profile")
+    public String profile() {
+        return "profile.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/manager")
+    public String manager() {
+        return "managerIndex.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/")
     public String index() {
         return "index.html";
     }

@@ -6,10 +6,19 @@ import ru.shumilin.carService.car.entity.EngineTypeEntity;
 import ru.shumilin.carService.car.exception.EngineTypeNotFoundException;
 import ru.shumilin.carService.car.repository.EngineTypeRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class EngineTypeService {
     private EngineTypeRepository engineTypeRepository;
+
+    public List<EngineTypeEntity> findAll() {
+        List<EngineTypeEntity> res = new ArrayList<>();
+        engineTypeRepository.findAll().forEach(res::add);
+        return res;
+    }
 
     public boolean save(EngineTypeEntity entity) {
         engineTypeRepository.save(entity);

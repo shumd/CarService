@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.shumilin.carService.car.service.MakerService;
 import ru.shumilin.carService.car.entity.MakerEntity;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RequestMapping("/makers")
 @RestController
@@ -15,6 +17,11 @@ public class MakerController {
     @GetMapping
     public MakerEntity getMaker(@RequestParam Integer id){
         return makerService.findById(id);
+    }
+
+    @GetMapping("/all")
+    public List<MakerEntity> all(){
+        return makerService.findAll();
     }
 
     @PostMapping()

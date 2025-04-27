@@ -2,12 +2,11 @@ package ru.shumilin.carService.car.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.shumilin.carService.car.entity.EngineTypeEntity;
 import ru.shumilin.carService.car.service.EngineTypeService;
+
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -23,5 +22,10 @@ public class EngineTypeController{
             return ResponseEntity.badRequest()
                     .body("Не удалось создать тип двигателя");
         }
+    }
+
+    @GetMapping("/all")
+    public List<EngineTypeEntity> findAll(){
+        return engineTypeService.findAll();
     }
 }
