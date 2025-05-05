@@ -1,5 +1,6 @@
 package ru.shumilin.carService.human.manager.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +47,19 @@ public class ManagerController {
 
     @GetMapping("/login")
     public boolean login(@RequestParam String l,
-            @RequestParam String p){
-        return managerService.login(l,p);
+                         @RequestParam String p,
+                         HttpSession session){
+        return managerService.login(l,p, session);
+    }
+
+    @GetMapping("/profile")
+    public ManagerEntity profile(HttpSession session){
+        ManagerEntity manager = (ManagerEntity) session.getAttribute("manager");
+        if (manager == null) {throw new RuntimeException("session is empty");}
+        return manager;
+    }
+    @PostMapping("/logout")
+    public void logout(HttpSession session){
+        session.removeAttribute("manager");
     }
 }

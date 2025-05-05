@@ -1,5 +1,6 @@
 package ru.shumilin.carService.human.manager.service;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.shumilin.carService.human.manager.entity.ManagerEntity;
@@ -30,14 +31,19 @@ public class ManagerService {
         repo.deleteById(id);
     }
 
-    public boolean login(String login, String password){
+    public boolean login(String login, String password, HttpSession session){
+
         ManagerEntity manager = repo.findByLogin(login).orElseThrow(
                 () -> new ManagerNotFoundException(
                         "Менеджер с логином " + login + " не найден"
                 )
         );
-        return manager.getLogin().equals(login) &&
-                manager.getPassword().equals(password);
+
+        if(manager.getLogin().equals(login) && manager.getPassword().equals(password)){
+            session.setAttribute("manager", manager);
+            return true;
+        }
+        return false;
     }
 
     public WorkStatusEntity updateWorkStatus(long idManager, int idWorkStatus){

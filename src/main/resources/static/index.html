@@ -120,6 +120,8 @@
             <button type="submit">Записаться</button>
         </div>
     </form>
+    <!-- Скрытый элемент для хранения ID клиента -->
+    <input type="hidden" id="clientId" value="">
 </div>
 
 <script>
@@ -140,6 +142,9 @@
             const profileData = await response.json();
             const fullName = `${profileData.name.surname} ${profileData.name.name} ${profileData.name.patronymic}`;
             document.getElementById('greeting').innerText = `Привет, ${fullName}!`;
+
+            // Сохраняем clientId в скрытое поле
+            document.getElementById('clientId').value = profileData.id;
 
             // Загрузка автомобилей в выпадающий список
             const carSelect = document.getElementById('car');
@@ -207,10 +212,57 @@
         }
     });
 
+    // Функция для отправки данных на сервер
+    async function submitServiceRequest(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+        try {
+            // Получаем значения из формы
+            const carId = document.getElementById('car').value;
+            const serviceId = document.getElementById('service-type').value;
+            const clientId = document.getElementById('clientId').value;
+
+            // Формируем JSON-объект
+            const requestData = {
+                carId: parseInt(carId),
+                serviceId: parseInt(serviceId),
+                clientId: parseInt(clientId),
+                mechanicId: -1,
+                managerId: -1,
+                serviceDeliveryStatusId: 1
+            };
+
+            // Отправляем POST-запрос на сервер
+            const response = await fetch('http://localhost:8080/serviceDelivery', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Ошибка при отправке данных');
+            }
+
+            // Успешная отправка
+            alert('Вы успешно записались на ТО!');
+            document.getElementById('serviceForm').reset(); // Очищаем форму
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось записаться на ТО. Попробуйте позже.');
+        }
+    }
+
     // Загрузка данных при открытии страницы
     document.addEventListener('DOMContentLoaded', () => {
         fetchProfile();
         fetchServices();
+
+        // Добавляем обработчик для отправки формы
+        const form = document.getElementById('serviceForm');
+        form.addEventListener('submit', submitServiceRequest);
     });
 </script>
 

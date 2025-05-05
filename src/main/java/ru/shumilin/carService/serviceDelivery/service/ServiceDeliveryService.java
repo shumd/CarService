@@ -84,13 +84,15 @@ public class ServiceDeliveryService {
     @Transactional
     public ServiceDeliveryEntity update(int id, ServiceDeliveryRequest serviceDeliveryRequest) {
         ServiceDeliveryEntity serviceDeliveryEntity = findById(id);
+        MechanicEntity mechanicEntity = serviceDeliveryRequest.getMechanicId() < 0 ? null :
+                mechanicService.getMechanicById(serviceDeliveryRequest.getMechanicId());
 
         serviceDeliveryEntity.setService(serviceDeliveryEntity.getService());
         serviceDeliveryEntity.setCar(carService.findById(serviceDeliveryRequest.getCarId()));
         serviceDeliveryEntity.setClient(clientService.findById(serviceDeliveryRequest.getClientId()));
         serviceDeliveryEntity.setManager(managerService.findById(serviceDeliveryRequest.getManagerId()));
         serviceDeliveryEntity.setServiceDeliveryStatus(serviceDeliveryStatusService.findById(serviceDeliveryRequest.getServiceDeliveryStatusId()));
-        serviceDeliveryEntity.setMechanic(mechanicService.getMechanicById(serviceDeliveryRequest.getMechanicId()));
+        serviceDeliveryEntity.setMechanic(mechanicEntity);
 
         return serviceDeliveryRepository.save(serviceDeliveryEntity);
     }

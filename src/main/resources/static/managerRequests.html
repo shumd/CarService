@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои заявки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+        }
+
+        .navbar a.active {
+            background-color: #4CAF50;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px 0 10px;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: flex-end;
+        }
+
+        .row div {
+            flex: 1 1 200px;
+        }
+
+        select, button {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/manager">Новые заявки</a>
+    <a href="/manager-requests" class="active">Мои заявки</a>
+    <a href="/manager-mechanics">Механики</a>
+</div>
+
+<h1>Мои заявки</h1>
+<div class="container" id="requestsContainer"></div>
+
+<script>
+    let managerId = null;
+    let mechanics = [];
+    let statuses = [];
+
+    async function fetchProfile() {
+        const res = await fetch('http://localhost:8080/managers/profile');
+        if (!res.ok) {
+            window.location.href = "http://localhost:8080/manager-auth";
+            return;
+        }
+        const data = await res.json();
+        managerId = data.id;
+    }
+
+    async function fetchMechanics() {
+        const res = await fetch('http://localhost:8080/mechanics/status?status=работает');
+        mechanics = await res.json();
+    }
+
+    async function fetchStatuses() {
+        const res = await fetch('http://localhost:8080/deliveryStatus/all');
+        statuses = await res.json();
+    }
+
+    function mechanicFullName(mechanic) {
+        return `${mechanic.name.surname} ${mechanic.name.name} ${mechanic.name.patronymic}`;
+    }
+
+    async function fetchRequests() {
+        const res = await fetch(`http://localhost:8080/serviceDelivery/manager?id=${managerId}`);
+        const data = await res.json();
+        const container = document.getElementById('requestsContainer');
+        container.innerHTML = '';
+
+        data.forEach(request => {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const client = request.client.name;
+            const car = request.car;
+            const service = request.service;
+            const currentMechanic = request.mechanic;
+            const currentStatus = request.serviceDeliveryStatus;
+
+            card.innerHTML = `
+                <h3>Заявка #${request.id}</h3>
+                <div><strong>Клиент:</strong> ${client.surname} ${client.name} ${client.patronymic}</div>
+                <div><strong>Телефон:</strong> ${request.client.phoneNumber}</div>
+                <div><strong>Авто:</strong> ${car.licensePlate} (${car.maker.name} ${car.model}, ${car.odometer} км)</div>
+                <div><strong>Услуга:</strong> ${service.name} (${service.price} ₽)</div>
+                <div class="row">
+                    <div>
+                        <label>Механик:
+                            <select id="mechanic-${request.id}">
+                                <option value="">Не назначен</option>
+                                ${mechanics.map(m => `<option value="${m.id}" ${currentMechanic && m.id === currentMechanic.id ? 'selected' : ''}>${mechanicFullName(m)}</option>`).join('')}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>Статус:
+                            <select id="status-${request.id}">
+                                ${statuses.map(s => `<option value="${s.id}" ${s.id === currentStatus.id ? 'selected' : ''}>${s.status}</option>`).join('')}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <button onclick="updateRequest(${request.id}, ${car.id}, ${service.id}, ${request.client.id})">Изменить</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    async function updateRequest(id, carId, serviceId, clientId) {
+        const mechanicId = document.getElementById(`mechanic-${id}`).value || -1;
+        const statusId = document.getElementById(`status-${id}`).value;
+
+        const payload = {
+            carId: carId,
+            serviceId: serviceId,
+            clientId: clientId,
+            mechanicId: parseInt(mechanicId),
+            managerId: managerId,
+            serviceDeliveryStatusId: parseInt(statusId)
+        };
+
+        await fetch(`http://localhost:8080/serviceDelivery/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        alert('Заявка обновлена');
+    }
+
+    async function init() {
+        await fetchProfile();
+        await Promise.all([fetchMechanics(), fetchStatuses()]);
+        await fetchRequests();
+    }
+
+    init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Механики</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+        }
+
+        .navbar a.active {
+            background-color: #4CAF50;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px 0 10px;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+        }
+
+        .card .task {
+            margin-left: 15px;
+            margin-top: 5px;
+            padding-left: 10px;
+            border-left: 3px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/manager">Новые заявки</a>
+    <a href="/manager-requests">Мои заявки</a>
+    <a href="/manager-mechanics" class="active">Механики</a>
+    <a href="#" onclick="logout()" style="float: right; background-color: crimson;">Выход</a>
+</div>
+
+<h1>Механики</h1>
+<div class="container" id="mechanicsContainer"></div>
+
+<script>
+    async function fetchMechanics() {
+        const res = await fetch("http://localhost:8080/mechanics/status?status=работает");
+        return await res.json();
+    }
+
+    async function fetchTasksByMechanicId(id) {
+        const res = await fetch(`http://localhost:8080/serviceDelivery/mechanic?id=${id}`);
+        return await res.json();
+    }
+
+    function mechanicFullName(name) {
+        return `${name.surname} ${name.name} ${name.patronymic}`;
+    }
+
+    async function renderMechanics() {
+        const container = document.getElementById("mechanicsContainer");
+        container.innerHTML = "";
+
+        const mechanics = await fetchMechanics();
+
+        for (const mechanic of mechanics) {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <h3>${mechanicFullName(mechanic.name)}</h3>
+                <p><strong>Зарплата:</strong> ${mechanic.salary} ₽</p>
+                <div class="tasks" id="tasks-${mechanic.id}"><em>Загрузка задач...</em></div>
+            `;
+
+            container.appendChild(card);
+
+            const tasksContainer = card.querySelector(`#tasks-${mechanic.id}`);
+            const tasks = await fetchTasksByMechanicId(mechanic.id);
+
+            if (tasks.length === 0) {
+                tasksContainer.innerHTML = "<p>Нет назначенных заявок.</p>";
+            } else {
+                tasksContainer.innerHTML = "";
+                tasks.forEach(task => {
+                    const div = document.createElement("div");
+                    div.className = "task";
+                    div.innerHTML = `
+                        <p><strong>Заявка #${task.id}</strong></p>
+                        <p><strong>Авто:</strong> ${task.car.licensePlate} (${task.car.maker.name} ${task.car.model}, ${task.car.odometer} км)</p>
+                        <p><strong>Услуга:</strong> ${task.service.name} — ${task.service.price} ₽</p>
+                        <p><strong>Клиент:</strong> ${task.client.name.surname} ${task.client.name.name} ${task.client.name.patronymic}</p>
+                        <p><strong>Статус:</strong> ${task.serviceDeliveryStatus.status}</p>
+                    `;
+                    tasksContainer.appendChild(div);
+                });
+            }
+        }
+    }
+
+    function logout() {
+        fetch('http://localhost:8080/managers/logout', {
+            method: 'POST',
+            credentials: 'include'
+        }).then(() => {
+            window.location.href = '/manager-auth';
+        }).catch(err => {
+            alert('Ошибка при выходе');
+            console.error(err);
+        });
+    }
+
+    async function checkAuthAndInit() {
+        try {
+            const res = await fetch('http://localhost:8080/managers/profile');
+            if (!res.ok) {
+                window.location.href = "/manager-auth";
+                return;
+            }
+            await renderMechanics();
+        } catch (err) {
+            console.error("Ошибка при проверке авторизации", err);
+            window.location.href = "/manager-auth";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", checkAuthAndInit);
+</script>
+
+
+</body>
+</html>

@@ -31,6 +31,18 @@ public class PageController {
     }
 
     @GetMapping
+    @RequestMapping("/manager-requests")
+    public String managerRequests() {
+        return "managerRequests.html";
+    }
+
+    @GetMapping
+    @RequestMapping("manager-mechanics")
+    public String managerMechanics() {
+        return "managerMechanics.html";
+    }
+
+    @GetMapping
     @RequestMapping("/")
     public String index() {
         return "index.html";
