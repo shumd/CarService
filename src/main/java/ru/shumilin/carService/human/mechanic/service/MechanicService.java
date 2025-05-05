@@ -1,9 +1,7 @@
 package ru.shumilin.carService.human.mechanic.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import ru.shumilin.carService.human.mechanic.entity.MechanicEntity;
 import ru.shumilin.carService.human.mechanic.exception.MechanicNotFoundException;
 import ru.shumilin.carService.human.mechanic.repository.MechanicRepository;
@@ -62,11 +60,13 @@ public class MechanicService {
     public MechanicEntity toEntity(MechanicRequest request){
         return MechanicEntity.builder()
                 .name(
-                        NameEntity.builder()
-                                .name(request.getName())
-                                .surname(request.getSurname())
-                                .patronymic(request.getPatronymic())
-                                .build()
+                        nameService.saveIfNotExists(
+                            NameEntity.builder()
+                                    .name(request.getName())
+                                    .surname(request.getSurname())
+                                    .patronymic(request.getPatronymic())
+                                    .build()
+                        )
                 )
                 .salary(request.getSalary())
                 .workStatus(defaultStatus())
@@ -79,5 +79,10 @@ public class MechanicService {
             workStatusService.save(WorkStatusEntity.builder().status(status).build());
         }
         return workStatusService.findStatusByStatusName(status);
+    }
+
+    public List<MechanicEntity> findByWorkStatus(String status) {
+        WorkStatusEntity workStatusEntity = workStatusService.findStatusByStatusName(status);
+        return mechanicRepository.findAllByWorkStatus(workStatusEntity);
     }
 }

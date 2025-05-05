@@ -24,9 +24,24 @@ public class ServiceDeliveryController {
         return serviceDeliveryService.findByServiceDeliveryStatus(status);
     }
 
+    @GetMapping("/mechanic")
+    public List<ServiceDeliveryEntity> findByMechanic(@RequestParam int id) {
+        return serviceDeliveryService.findAllByMechanicId(id);
+    }
+
+    @GetMapping("/manager")
+    public List<ServiceDeliveryEntity> findByManager(@RequestParam long id) {
+        return serviceDeliveryService.findByManagerId(id);
+    }
+
     @GetMapping("/clientId")
     public ServiceDeliveryEntity findByClientId(@RequestParam int clientId) {
         return serviceDeliveryService.findByClientId(clientId);
+    }
+
+    @PutMapping("/{id}")
+    public ServiceDeliveryEntity update(@PathVariable int id, @RequestBody ServiceDeliveryRequest serviceDeliveryRequest) {
+        return serviceDeliveryService.update(id, serviceDeliveryRequest);
     }
 
     @PostMapping

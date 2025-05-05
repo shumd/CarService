@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface NameRepository extends CrudRepository<NameEntity, Long> {
     Optional<Iterable<NameEntity>> findBySurname(String surname);
+    boolean existsByNameAndSurnameAndPatronymic(String name, String surname, String patronymic);
 }

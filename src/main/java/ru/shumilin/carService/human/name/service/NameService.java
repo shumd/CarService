@@ -48,4 +48,18 @@ public class NameService {
         repo.delete(entity);
         return entity;
     }
+
+    public NameEntity saveIfNotExists(NameEntity entity) {
+        if(existByFullName(entity)){
+            return entity;
+        }
+        return save(entity);
+    }
+
+    public boolean existByFullName(NameEntity entity) {
+        return repo.existsByNameAndSurnameAndPatronymic(entity.getName(), entity.getSurname(), entity.getPatronymic());
+    }
+    public boolean existByFullName(String name, String surname, String patronymic) {
+        return repo.existsByNameAndSurnameAndPatronymic(name, surname, patronymic);
+    }
 }

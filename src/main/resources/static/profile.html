@@ -135,6 +135,7 @@
 <div class="navbar">
     <a href="http://localhost:8080/profile">Профиль</a>
     <a href="http://localhost:8080/">Запись на ТО</a>
+    <a id="logoutButton" style="float: right; cursor: pointer;">Выход</a>
 </div>
 <!-- Контейнер для контента -->
 <div class="container">
@@ -391,6 +392,28 @@
         // Обработка отправки формы
         const submitCarButton = document.getElementById('submitCarButton');
         submitCarButton.addEventListener('click', addCar);
+    });
+
+    // Обработчик для кнопки выхода
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+        try {
+            const response = await fetch('http://localhost:8080/clients/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                // Успешный выход, перенаправление на страницу авторизации
+                window.location.href = 'http://localhost:8080/auth';
+            } else {
+                throw new Error('Ошибка при выходе');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось выйти. Попробуйте позже.');
+        }
     });
 </script>
 </body>

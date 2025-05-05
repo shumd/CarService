@@ -11,12 +11,10 @@
             margin: 0;
             padding: 0;
         }
-
         .navbar {
             background-color: #333;
             overflow: hidden;
         }
-
         .navbar a {
             float: left;
             display: block;
@@ -25,11 +23,12 @@
             padding: 14px 20px;
             text-decoration: none;
         }
-
         .navbar a:hover {
             background-color: #575757;
         }
-
+        .navbar a.active {
+            background-color: #4CAF50; /* Активная вкладка */
+        }
         /* Стили для контейнера контента */
         .container {
             padding: 20px;
@@ -39,71 +38,59 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         .container h2 {
             text-align: center;
             margin-bottom: 20px;
         }
-
         /* Стили для таблицы */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         table th, table td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
         }
-
         table th {
             background-color: #333;
             color: white;
         }
-
         table tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-
         /* Кнопки действий */
         .action-buttons {
             display: flex;
             gap: 10px;
         }
-
         .action-buttons button {
             padding: 5px 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-
         .action-buttons .approve {
             background-color: #28a745;
             color: white;
         }
-
-        .action-buttons .reject {
-            background-color: #dc3545;
-            color: white;
+        .action-buttons .approve:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-
 <!-- Навбар -->
 <div class="navbar">
-    <a href="#requests">Заявки</a>
-    <a href="#services">Услуги</a>
+    <a href="#newRequests" class="active">Новые заявки</a>
+    <a href="#myRequests">Мои заявки</a>
     <a href="#mechanics">Механики</a>
 </div>
-
 <!-- Контейнер для контента -->
 <div class="container">
-    <h2>Список заявок</h2>
-
+    <h2 id="pageTitle">Новые заявки</h2>
     <!-- Таблица заявок -->
     <table id="requestsTable">
         <thead>
@@ -112,70 +99,325 @@
             <th>ФИО клиента</th>
             <th>Телефон</th>
             <th>Модель автомобиля</th>
-            <th>Дата записи</th>
+            <th>Услуга</th>
             <th>Статус</th>
-            <th>Действия</th>
+            <th id="mechanicColumn" style="display: none;">ФИО механика</th>
+            <th id="actionsColumn">Действия</th>
         </tr>
         </thead>
         <tbody>
-        <!-- Пример данных -->
+        <!-- Данные будут загружаться динамически -->
+        </tbody>
+    </table>
+    <!-- Таблица механиков -->
+    <table id="mechanicsTable" style="display: none;">
+        <thead>
         <tr>
-            <td>1</td>
-            <td>Иванов Иван Иванович</td>
-            <td>+79001234567</td>
-            <td>Toyota Camry</td>
-            <td>2023-10-15</td>
-            <td>Новая</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="approve">Подтвердить</button>
-                    <button class="reject">Отклонить</button>
-                </div>
-            </td>
+            <th>ID</th>
+            <th>ФИО</th>
+            <th>Зарплата</th>
+            <th>Статус</th>
+            <th>Текущие заказы</th>
         </tr>
-        <tr>
-            <td>2</td>
-            <td>Петров Петр Петрович</td>
-            <td>+79009876543</td>
-            <td>Honda Civic</td>
-            <td>2023-10-16</td>
-            <td>Новая</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="approve">Подтвердить</button>
-                    <button class="reject">Отклонить</button>
-                </div>
-            </td>
-        </tr>
+        </thead>
+        <tbody>
+        <!-- Данные будут загружаться динамически -->
         </tbody>
     </table>
 </div>
-
 <script>
-    // Пример обработки кнопок действий
+    // Глобальные переменные для хранения данных
+    let mechanicsList = [];
+    let deliveryStatuses = [];
+
+    // Функция для загрузки данных о механиках
+    async function fetchMechanics(status = 'работает') {
+        try {
+            const response = await fetch(`http://localhost:8080/mechanics/status?status=${status}`);
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке данных механиков');
+            }
+            mechanicsList = await response.json();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные механиков. Проверьте консоль.');
+        }
+    }
+
+    // Функция для загрузки данных о статусах
+    async function fetchDeliveryStatuses() {
+        try {
+            const response = await fetch('http://localhost:8080/deliveryStatus/all');
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке данных статусов');
+            }
+            deliveryStatuses = await response.json();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные статусов. Проверьте консоль.');
+        }
+    }
+
+    // Функция для загрузки данных с сервера
+    async function fetchRequests(endpoint, managerId = null) {
+        try {
+            let url = `http://localhost:8080/serviceDelivery/${endpoint}`;
+            if (managerId !== null) {
+                url += `?id=${managerId}`;
+            }
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке данных');
+            }
+            const data = await response.json();
+            // Получаем тело таблицы
+            const tbody = document.querySelector('#requestsTable tbody');
+            tbody.innerHTML = ''; // Очищаем старые данные
+            // Показываем или скрываем столбцы в зависимости от вкладки
+            const mechanicColumn = document.getElementById('mechanicColumn');
+            if (endpoint === 'manager') {
+                mechanicColumn.style.display = ''; // Показываем столбец "ФИО механика"
+            } else {
+                mechanicColumn.style.display = 'none'; // Скрываем столбец "ФИО механика"
+            }
+            // Заполняем таблицу новыми данными
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                // ID
+                const idCell = document.createElement('td');
+                idCell.textContent = item.id;
+                row.appendChild(idCell);
+                // ФИО клиента
+                const clientNameCell = document.createElement('td');
+                const clientName = `${item.client.name.surname} ${item.client.name.name} ${item.client.name.patronymic}`;
+                clientNameCell.textContent = clientName;
+                row.appendChild(clientNameCell);
+                // Телефон
+                const phoneCell = document.createElement('td');
+                phoneCell.textContent = item.client.phoneNumber;
+                row.appendChild(phoneCell);
+                // Модель автомобиля
+                const carModelCell = document.createElement('td');
+                carModelCell.textContent = `${item.car.maker.name} ${item.car.model}`;
+                row.appendChild(carModelCell);
+                // Услуга
+                const serviceCell = document.createElement('td');
+                serviceCell.textContent = item.service.name;
+                row.appendChild(serviceCell);
+                // Статус (для "Мои заявки")
+                const statusCell = document.createElement('td');
+                if (endpoint === 'manager') {
+                    const select = document.createElement('select');
+                    select.className = 'status-select';
+                    select.setAttribute('data-request-id', item.id); // Привязываем к ID заявки
+                    // Добавляем опции из списка статусов
+                    deliveryStatuses.forEach(status => {
+                        const option = document.createElement('option');
+                        option.value = status.id;
+                        option.textContent = status.status;
+                        select.appendChild(option);
+                    });
+                    // Устанавливаем текущий статус как выбранный
+                    select.value = item.serviceDeliveryStatus.id;
+                    statusCell.appendChild(select);
+                } else {
+                    statusCell.textContent = item.serviceDeliveryStatus.status;
+                }
+                row.appendChild(statusCell);
+                // ФИО механика (для "Мои заявки")
+                const mechanicCell = document.createElement('td');
+                if (endpoint === 'manager') {
+                    const select = document.createElement('select');
+                    select.className = 'mechanic-select';
+                    select.setAttribute('data-request-id', item.id); // Привязываем к ID заявки
+                    // Добавляем опции из списка механиков
+                    mechanicsList.forEach(mechanic => {
+                        const option = document.createElement('option');
+                        const mechanicName = `${mechanic.name.surname} ${mechanic.name.name} ${mechanic.name.patronymic}`;
+                        option.value = mechanic.id;
+                        option.textContent = mechanicName;
+                        select.appendChild(option);
+                    });
+                    // Устанавливаем текущего механика как выбранного
+                    select.value = item.mechanic.id;
+                    mechanicCell.appendChild(select);
+                }
+                row.appendChild(mechanicCell);
+                // Действия
+                const actionsCell = document.createElement('td');
+                const approveButton = document.createElement('button');
+                approveButton.className = 'approve';
+                approveButton.textContent = 'Подтвердить';
+                approveButton.addEventListener('click', () => handleApprove(item));
+                actionsCell.appendChild(approveButton);
+                row.appendChild(actionsCell);
+                // Добавляем строку в таблицу
+                tbody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные. Проверьте консоль.');
+        }
+    }
+
+    // Функция для обработки подтверждения заявки
+    async function handleApprove(request) {
+        try {
+            // Находим выпадающий список статусов для данной заявки
+            const statusSelect = document.querySelector(`.status-select[data-request-id="${request.id}"]`);
+            const selectedStatusId = statusSelect ? parseInt(statusSelect.value) : request.serviceDeliveryStatus.id;
+            // Находим выпадающий список механиков для данной заявки
+            const mechanicSelect = document.querySelector(`.mechanic-select[data-request-id="${request.id}"]`);
+            const selectedMechanicId = mechanicSelect ? parseInt(mechanicSelect.value) : request.mechanic.id;
+            const requestData = {
+                carId: request.car.id,
+                serviceId: request.service.id,
+                clientId: request.client.id,
+                mechanicId: selectedMechanicId, // ID выбранного механика
+                managerId: request.manager.id,
+                serviceDeliveryStatusId: selectedStatusId // ID выбранного статуса
+            };
+            const response = await fetch(`http://localhost:8080/serviceDelivery/${request.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            if (!response.ok) {
+                throw new Error('Ошибка при подтверждении заявки');
+            }
+            alert(`Заявка ID ${request.id} успешно обновлена.`);
+            fetchRequests('новый'); // Обновляем таблицу после подтверждения
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось обновить заявку. Проверьте консоль.');
+        }
+    }
+
+    // Функция для загрузки заказов механика
+    async function fetchMechanicOrders(mechanicId) {
+        try {
+            const response = await fetch(`http://localhost:8080/serviceDelivery/mechanic?id=${mechanicId}`);
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке данных заказов механика');
+            }
+            const data = await response.json();
+
+            // Фильтруем заказы, исключая те, у которых статус "готов"
+            return data.filter(order => order.serviceDeliveryStatus.status !== "готов");
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные заказов механика. Проверьте консоль.');
+            return [];
+        }
+    }
+
+    // Функция для загрузки данных механиков с их заказами
+    async function fetchMechanicsTable() {
+        try {
+            const tbody = document.querySelector('#mechanicsTable tbody');
+            tbody.innerHTML = ''; // Очищаем старые данные
+
+            for (const mechanic of mechanicsList) {
+                const row = document.createElement('tr');
+
+                // ID
+                const idCell = document.createElement('td');
+                idCell.textContent = mechanic.id;
+                row.appendChild(idCell);
+
+                // ФИО
+                const nameCell = document.createElement('td');
+                const fullName = `${mechanic.name.surname} ${mechanic.name.name} ${mechanic.name.patronymic}`;
+                nameCell.textContent = fullName;
+                row.appendChild(nameCell);
+
+                // Зарплата
+                const salaryCell = document.createElement('td');
+                salaryCell.textContent = mechanic.salary;
+                row.appendChild(salaryCell);
+
+                // Статус
+                const statusCell = document.createElement('td');
+                statusCell.textContent = mechanic.workStatus.status;
+                row.appendChild(statusCell);
+
+                // Текущие заказы
+                const ordersCell = document.createElement('td');
+                const orders = await fetchMechanicOrders(mechanic.id); // Загружаем заказы механика
+                if (orders.length > 0) {
+                    const ul = document.createElement('ul');
+                    orders.forEach(order => {
+                        const li = document.createElement('li');
+                        li.textContent = `Заказ #${order.id}: ${order.car.maker.name} ${order.car.model}, ${order.service.name}`;
+                        ul.appendChild(li);
+                    });
+                    ordersCell.appendChild(ul);
+                } else {
+                    ordersCell.textContent = 'Нет текущих заказов';
+                }
+                row.appendChild(ordersCell);
+
+                // Добавляем строку в таблицу
+                tbody.appendChild(row);
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные механиков. Проверьте консоль.');
+        }
+    }
+
+    // Функция для обновления активной вкладки и заголовка
+    function updateActiveTab(tabName) {
+        const pageTitle = document.getElementById('pageTitle');
+        const navLinks = document.querySelectorAll('.navbar a');
+        // Убираем активный класс у всех ссылок
+        navLinks.forEach(link => link.classList.remove('active'));
+        // Добавляем активный класс к выбранной ссылке
+        const activeLink = document.querySelector(`.navbar a[href="#${tabName}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+        // Обновляем заголовок страницы
+        switch (tabName) {
+            case 'newRequests':
+                pageTitle.textContent = 'Новые заявки';
+                document.getElementById('requestsTable').style.display = '';
+                document.getElementById('mechanicsTable').style.display = 'none';
+                fetchRequests('новый');
+                break;
+            case 'myRequests':
+                pageTitle.textContent = 'Мои заявки';
+                document.getElementById('requestsTable').style.display = '';
+                document.getElementById('mechanicsTable').style.display = 'none';
+                const managerId = 1; // Здесь можно получить ID текущего менеджера
+                Promise.all([fetchMechanics(), fetchDeliveryStatuses()]).then(() => {
+                    fetchRequests('manager', managerId); // Загружаем механиков и статусы перед заявками
+                });
+                break;
+            case 'mechanics':
+                pageTitle.textContent = 'Механики';
+                document.getElementById('requestsTable').style.display = 'none';
+                document.getElementById('mechanicsTable').style.display = '';
+                fetchMechanics().then(fetchMechanicsTable);
+                break;
+        }
+    }
+
+    // Обработка кликов по навбару
     document.addEventListener('DOMContentLoaded', () => {
-        const approveButtons = document.querySelectorAll('.approve');
-        const rejectButtons = document.querySelectorAll('.reject');
-
-        approveButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const row = button.closest('tr');
-                const clientId = row.querySelector('td:first-child').innerText;
-                alert(`Заявка ID ${clientId} подтверждена.`);
-                // Здесь можно отправить запрос на сервер для обновления статуса
+        const navLinks = document.querySelectorAll('.navbar a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabName = link.getAttribute('href').substring(1); // Убираем символ #
+                updateActiveTab(tabName);
             });
         });
-
-        rejectButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const row = button.closest('tr');
-                const clientId = row.querySelector('td:first-child').innerText;
-                alert(`Заявка ID ${clientId} отклонена.`);
-                // Здесь можно отправить запрос на сервер для обновления статуса
-            });
-        });
+        // Загружаем данные для "Новые заявки" по умолчанию
+        updateActiveTab('newRequests');
     });
 </script>
-
 </body>
 </html>

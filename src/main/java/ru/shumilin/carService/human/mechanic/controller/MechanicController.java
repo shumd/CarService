@@ -16,8 +16,8 @@ public class MechanicController {
     private MechanicService mechanicService;
 
     @GetMapping
-    @RequestMapping("/id")
-    public MechanicEntity findMechanicById(@RequestParam long id) {
+    @RequestMapping("/{id}")
+    public MechanicEntity findMechanicById(@PathVariable long id) {
         return mechanicService.getMechanicById(id);
     }
 
@@ -25,6 +25,12 @@ public class MechanicController {
     @RequestMapping("/surname")
     public List<MechanicEntity> findMechanicBySurname(@RequestParam String surname) {
         return mechanicService.getMechanicBySurname(surname);
+    }
+
+    @GetMapping
+    @RequestMapping("/status")
+    public List<MechanicEntity> findMechanicByWorkStatus(@RequestParam String status) {
+        return mechanicService.findByWorkStatus(status);
     }
 
     @PostMapping

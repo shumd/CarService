@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.shumilin.carService.serviceDeliveryStatus.entity.ServiceDeliveryStatusEntity;
 import ru.shumilin.carService.serviceDeliveryStatus.service.ServiceDeliveryStatusService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/deliveryStatus")
 @CrossOrigin
@@ -15,6 +17,12 @@ public class ServiceDeliveryStatusController {
     @GetMapping("/id")
     public ServiceDeliveryStatusEntity findById(@RequestParam Integer id) {
         return serviceDeliveryStatusService.findById(id);
+    }
+
+    @GetMapping
+    @RequestMapping("/all")
+    public List<ServiceDeliveryStatusEntity> all(){
+        return serviceDeliveryStatusService.findAll();
     }
 
     @GetMapping("/status")

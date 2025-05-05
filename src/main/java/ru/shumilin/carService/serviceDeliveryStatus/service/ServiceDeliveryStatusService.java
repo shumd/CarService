@@ -6,6 +6,9 @@ import ru.shumilin.carService.serviceDeliveryStatus.entity.ServiceDeliveryStatus
 import ru.shumilin.carService.serviceDeliveryStatus.exception.ServiceDeliveryStatusNotFoundException;
 import ru.shumilin.carService.serviceDeliveryStatus.repository.ServiceDeliveryStatusRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class ServiceDeliveryStatusService {
@@ -37,5 +40,11 @@ public class ServiceDeliveryStatusService {
 
     public boolean existsByStatus(String status){
         return serviceDeliveryStatusRepository.existsByStatus(status);
+    }
+
+    public List<ServiceDeliveryStatusEntity> findAll() {
+        List<ServiceDeliveryStatusEntity> res = new ArrayList<>();
+        serviceDeliveryStatusRepository.findAll().forEach(res::add);
+        return res;
     }
 }
