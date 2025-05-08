@@ -53,4 +53,58 @@ public class PageController {
     public String register() {
         return "register.html";
     }
+
+    @GetMapping
+    @RequestMapping("/admin")
+    public String admin() {
+        return "admin-index.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-makers")
+    public String adminMakers() {
+        return "admin-makers.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-engine-types")
+    public String adminEngineTypes() {
+        return "admin-engine-types.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-service-requests")
+    public String adminServiceRequests() {
+        return "admin-service-requests.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-clients")
+    public String adminClients() {
+        return "admin-clients.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-managers")
+    public String adminManagers() {
+        return "admin-managers.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-mechanics")
+    public String adminMechanics() {
+        return "admin-mechanics.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-service-status")
+    public String adminServiceStatus() {
+        return "admin-service-status.html";
+    }
+
+    @GetMapping
+    @RequestMapping("/admin-work-status")
+    public String adminWorkStatus() {
+        return "admin-work-status.html";
+    }
 }

@@ -87,7 +87,10 @@
 
     async function fetchTasksByMechanicId(id) {
         const res = await fetch(`http://localhost:8080/serviceDelivery/mechanic?id=${id}`);
-        return await res.json();
+        const tasks = await res.json();
+        return tasks.filter(task =>
+            task.serviceDeliveryStatus.status.toLowerCase() !== "готов"
+        );
     }
 
     function mechanicFullName(name) {

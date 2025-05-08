@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ServiceDeliveryRepository extends CrudRepository<ServiceDeliveryEntity, Integer> {
-    Optional<ServiceDeliveryEntity> findByClientId(int clientId);
+    List<ServiceDeliveryEntity> findAllByClientId(int clientId);
     List<ServiceDeliveryEntity> findAllByServiceDeliveryStatus(ServiceDeliveryStatusEntity serviceDeliveryStatus);
     List<ServiceDeliveryEntity> findAllByManagerId(long managerId);
     List<ServiceDeliveryEntity> findAllByMechanicId(long mechanicId);

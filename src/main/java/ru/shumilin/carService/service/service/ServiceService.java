@@ -1,5 +1,6 @@
 package ru.shumilin.carService.service.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.shumilin.carService.service.entity.ServiceEntity;
@@ -18,6 +19,14 @@ public class ServiceService {
         List<ServiceEntity> result = new ArrayList<>();
         serviceRepository.findAll().forEach(result::add);
         return result;
+    }
+
+    @Transactional
+    public ServiceEntity update(int id, String name, int price){
+        ServiceEntity serviceEntity = findById(id);
+        serviceEntity.setName(name);
+        serviceEntity.setPrice(price);
+        return serviceRepository.save(serviceEntity);
     }
 
     public ServiceEntity findById(int id){

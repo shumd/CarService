@@ -30,8 +30,8 @@ public class ClientController {
         return clientService.getCarsById(id);
     }
 
-    @DeleteMapping
-    public boolean deleteClientById(@RequestParam int id) {
+    @DeleteMapping("/{id}")
+    public boolean deleteClientById(@PathVariable int id) {
         return clientService.deleteById(id);
     }
 

@@ -10,22 +10,27 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/engineTypes")
+@RequestMapping("/engine-types")
 public class EngineTypeController{
     EngineTypeService engineTypeService;
 
-    @PostMapping
-    public ResponseEntity<?> createEngineType(@RequestBody EngineTypeEntity engineType){
-        try{
-            return ResponseEntity.ok(engineTypeService.save(engineType));
-        }catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body("Не удалось создать тип двигателя");
-        }
+    @PostMapping("/")
+    public EngineTypeEntity createEngineType(@RequestParam String type){
+        return engineTypeService.save(type);
     }
 
     @GetMapping("/all")
     public List<EngineTypeEntity> findAll(){
         return engineTypeService.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id){
+        engineTypeService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public EngineTypeEntity update(@PathVariable int id, @RequestParam String type){
+        return engineTypeService.update(id,type);
     }
 }

@@ -29,6 +29,11 @@ public class ServiceController {
         return serviceService.findAll();
     }
 
+    @PutMapping("/{id}")
+    public ServiceEntity update(@PathVariable int id, @RequestParam String name, @RequestParam int price) {
+        return serviceService.update(id, name, price);
+    }
+
     @PostMapping
     public ServiceEntity save(@RequestParam String name,
                               @RequestParam int price) {

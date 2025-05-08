@@ -16,6 +16,7 @@ import ru.shumilin.carService.serviceDelivery.repository.ServiceDeliveryReposito
 import ru.shumilin.carService.serviceDelivery.request.ServiceDeliveryRequest;
 import ru.shumilin.carService.serviceDeliveryStatus.service.ServiceDeliveryStatusService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -50,12 +51,10 @@ public class ServiceDeliveryService {
         return serviceDeliveryRepository.findAllByMechanicId(mechanicId);
     }
 
-    public ServiceDeliveryEntity findByClientId(int clientId) {
-        return serviceDeliveryRepository.findByClientId(clientId).orElseThrow(
-                () -> new ServiceDeliveryNotFoundException(
-                        "Заказ с clientId " + clientId + " не найден"
-                )
-        );
+    public List<ServiceDeliveryEntity> findByClientId(int clientId) {
+        List<ServiceDeliveryEntity> res = new ArrayList<>();
+        serviceDeliveryRepository.findAllByClientId(clientId).forEach(res::add);
+        return res;
     }
 
     public ServiceDeliveryEntity save(ServiceDeliveryEntity serviceDeliveryEntity) {
@@ -95,5 +94,11 @@ public class ServiceDeliveryService {
         serviceDeliveryEntity.setMechanic(mechanicEntity);
 
         return serviceDeliveryRepository.save(serviceDeliveryEntity);
+    }
+
+    public List<ServiceDeliveryEntity> findAll() {
+        List<ServiceDeliveryEntity> res = new ArrayList<>();
+        serviceDeliveryRepository.findAll().forEach(res::add);
+        return res;
     }
 }

@@ -24,13 +24,18 @@ public class MakerController {
         return makerService.findAll();
     }
 
-    @PostMapping()
-    public ResponseEntity<?> createMaker(@RequestBody MakerEntity maker){
-        try{
-            makerService.save(maker);
-            return ResponseEntity.ok("Производитель создан успешно");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Не удалось создать производителя");
-        }
+    @PostMapping("/")
+    public MakerEntity createMaker(@RequestParam String name){
+        return makerService.save(name);
+    }
+
+    @DeleteMapping("/")
+    public void deleteMaker(@RequestParam Integer id){
+        makerService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public MakerEntity updateMaker(@PathVariable Integer id, @RequestParam String name){
+        return makerService.update(id, name);
     }
 }

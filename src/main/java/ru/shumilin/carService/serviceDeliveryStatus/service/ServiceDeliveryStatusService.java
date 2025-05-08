@@ -19,7 +19,8 @@ public class ServiceDeliveryStatusService {
     }
 
     public void deleteByStatus(String status){
-        serviceDeliveryStatusRepository.deleteByStatus(status);
+        ServiceDeliveryStatusEntity entity = findByStatus(status);
+        serviceDeliveryStatusRepository.delete(entity);
     }
 
     public ServiceDeliveryStatusEntity findById(Integer id){

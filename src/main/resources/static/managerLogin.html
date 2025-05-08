@@ -93,49 +93,47 @@
     const loginError = document.getElementById('loginError');
     const authError = document.getElementById('authError');
 
-    // Валидация при изменении значения в поле логина
     loginInput.addEventListener('input', () => {
-        if (loginInput.value.trim()) {
-            loginError.style.display = 'none';
-        } else {
-            loginError.style.display = 'block';
-        }
+        loginError.style.display = loginInput.value.trim() ? 'none' : 'block';
     });
 
-    // Обработка отправки формы
     form.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Предотвращаем стандартную отправку формы
-
-        // Скрываем сообщение об ошибке авторизации
+        event.preventDefault();
         authError.style.display = 'none';
 
-        // Проверка валидности полей
         if (!loginInput.value.trim() || !passwordInput.value.trim()) {
             loginError.style.display = 'block';
             return;
         }
 
-        // Получаем значения полей
         const login = loginInput.value.trim();
         const password = passwordInput.value.trim();
 
         try {
-            // Отправляем GET-запрос на сервер
-            const response = await fetch(`http://localhost:8080/managers/login?l=${encodeURIComponent(login)}&p=${encodeURIComponent(password)}`);
+            const loginRes = await fetch(`http://localhost:8080/managers/login?l=${encodeURIComponent(login)}&p=${encodeURIComponent(password)}`, {
+                credentials: 'include'
+            });
 
-            // Проверяем статус ответа
-            if (response.ok) {
-                const result = await response.json();
+            if (loginRes.ok) {
+                const loginResult = await loginRes.json();
+                if (loginResult === true) {
+                    // Дополнительная проверка на админа
+                    const adminRes = await fetch('http://localhost:8080/managers/admin-profile', {
+                        credentials: 'include'
+                    });
 
-                // Если авторизация успешна, переходим на страницу
-                if (result === true) {
-                    window.location.href = 'http://localhost:8080/manager';
+                    const adminData = await adminRes.text();
+
+                    if (!adminData.message || adminData.message !== "session is empty") {
+                        window.location.href = 'http://localhost:8080/admin';
+                    } else {
+                        window.location.href = 'http://localhost:8080/manager';
+                    }
                 } else {
-                    // Показываем сообщение об ошибке авторизации
+                    authError.textContent = 'Неверный логин или пароль';
                     authError.style.display = 'block';
                 }
             } else {
-                // Показываем сообщение об ошибке при проблемах с сервером
                 authError.textContent = 'Ошибка при отправке данных';
                 authError.style.display = 'block';
             }
@@ -146,5 +144,6 @@
         }
     });
 </script>
+
 </body>
 </html>

@@ -1,5 +1,6 @@
 package ru.shumilin.carService.car.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.shumilin.carService.car.entity.EngineTypeEntity;
@@ -20,9 +21,13 @@ public class EngineTypeService {
         return res;
     }
 
-    public boolean save(EngineTypeEntity entity) {
-        engineTypeRepository.save(entity);
-        return engineTypeRepository.existsById(entity.getId());
+    public EngineTypeEntity save(EngineTypeEntity entity) {
+        return engineTypeRepository.save(entity);
+    }
+    public EngineTypeEntity save(String type){
+        EngineTypeEntity entity = new EngineTypeEntity();
+        entity.setType(type);
+        return engineTypeRepository.save(entity);
     }
 
     public boolean delete(int id) {
@@ -44,5 +49,12 @@ public class EngineTypeService {
                         () -> new EngineTypeNotFoundException(
                                 "Двигатель с типом " + type + " не найден"
                 ));
+    }
+
+    @Transactional
+    public EngineTypeEntity update(int id, String type) {
+        EngineTypeEntity entity = findById(id);
+        entity.setType(type);
+        return engineTypeRepository.save(entity);
     }
 }

@@ -19,6 +19,11 @@ public class ServiceDeliveryController {
         return serviceDeliveryService.findById(id);
     }
 
+    @GetMapping("/all")
+    public List<ServiceDeliveryEntity> findAll() {
+        return serviceDeliveryService.findAll();
+    }
+
     @GetMapping("/{status}")
     public List<ServiceDeliveryEntity> findByStatus(@PathVariable String status) {
         return serviceDeliveryService.findByServiceDeliveryStatus(status);
@@ -35,7 +40,7 @@ public class ServiceDeliveryController {
     }
 
     @GetMapping("/clientId")
-    public ServiceDeliveryEntity findByClientId(@RequestParam int clientId) {
+    public List<ServiceDeliveryEntity> findByClientId(@RequestParam int clientId) {
         return serviceDeliveryService.findByClientId(clientId);
     }
 

@@ -1,5 +1,6 @@
 package ru.shumilin.carService.car.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.shumilin.carService.car.entity.MakerEntity;
@@ -28,9 +29,13 @@ public class MakerService {
         );
     }
 
-    public boolean save(MakerEntity makerEntity) {
-        makerRepository.save(makerEntity);
-        return makerRepository.existsById(makerEntity.getId());
+    public MakerEntity save(MakerEntity makerEntity) {
+        return makerRepository.save(makerEntity);
+    }
+    public MakerEntity save(String name){
+        MakerEntity makerEntity = new MakerEntity();
+        makerEntity.setName(name);
+        return makerRepository.save(makerEntity);
     }
 
     public boolean delete(Integer makerId) {
@@ -44,5 +49,12 @@ public class MakerService {
                         "Производитель с именем " + name + " не найден"
                 )
         );
+    }
+
+    @Transactional
+    public MakerEntity update(Integer id, String name) {
+        MakerEntity entity = findById(id);
+        entity.setName(name);
+        return save(entity);
     }
 }

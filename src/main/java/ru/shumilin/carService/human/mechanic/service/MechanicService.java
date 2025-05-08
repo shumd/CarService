@@ -21,6 +21,12 @@ public class MechanicService {
     private WorkStatusService workStatusService;
     private NameService nameService;
 
+    public List<MechanicEntity> findAll() {
+        List<MechanicEntity> res = new ArrayList<>();
+        mechanicRepository.findAll().forEach(res::add);
+        return res;
+    }
+
     public MechanicEntity getMechanicById(long id) {
         return mechanicRepository.findById(id).orElseThrow(
                 () -> new MechanicNotFoundException(

@@ -28,6 +28,12 @@ public class MechanicController {
     }
 
     @GetMapping
+    @RequestMapping("/all")
+    public List<MechanicEntity> findAllMechanic() {
+        return mechanicService.findAll();
+    }
+
+    @GetMapping
     @RequestMapping("/status")
     public List<MechanicEntity> findMechanicByWorkStatus(@RequestParam String status) {
         return mechanicService.findByWorkStatus(status);
@@ -38,8 +44,8 @@ public class MechanicController {
         return mechanicService.save(request);
     }
 
-    @DeleteMapping
-    public boolean deleteMechanicById(@RequestParam long id) {
+    @DeleteMapping("/{id}")
+    public boolean deleteMechanicById(@PathVariable long id) {
         return mechanicService.deleteMechanicById(id);
     }
 }

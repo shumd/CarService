@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Админ — Статусы работы</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .navbar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
+        }
+        .card-info {
+            margin-bottom: 0.5rem;
+        }
+        .label {
+            font-weight: 600;
+        }
+        .button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .button:hover {
+            background-color: #c0392b;
+        }
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        form {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        form input {
+            display: block;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            width: 100%;
+            font-size: 1rem;
+        }
+        form button {
+            background-color: #27ae60;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        form button:hover {
+            background-color: #1e8449;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/admin">Услуги</a>
+    <a href="/admin-service-requests">Заказы</a>
+    <a href="/admin-makers">Производители</a>
+    <a href="/admin-clients">Клиенты</a>
+    <a href="/admin-managers">Менеджеры</a>
+    <a href="/admin-mechanics">Механики</a>
+    <a href="/admin-service-status">Статусы заказов</a>
+    <a href="/admin-work-status">Статусы работы</a>
+</div>
+
+<div class="container">
+    <h1>Список статусов работы</h1>
+
+    <!-- Форма для создания нового статуса -->
+    <form id="createForm">
+        <h3>Добавить новый статус</h3>
+        <input type="text" id="newStatus" placeholder="Введите новый статус" required />
+        <button type="submit">Добавить</button>
+    </form>
+
+    <div id="workStatusContainer"></div>
+</div>
+
+<script>
+    async function loadWorkStatus() {
+        const res = await fetch('http://localhost:8080/workStatus/all');
+        const workStatuses = await res.json();
+        const container = document.getElementById('workStatusContainer');
+        container.innerHTML = '';
+
+        for (const workStatus of workStatuses) {
+            const status = workStatus.status;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            card.innerHTML = `
+            <div class="card-info"><span class="label">Статус:</span> ${status}</div>
+        `;
+
+            container.appendChild(card);
+        }
+    }
+
+    async function addStatus(e) {
+        e.preventDefault();
+        const newStatus = document.getElementById('newStatus').value.trim();
+
+        if (newStatus === '') {
+            alert('Введите статус');
+            return;
+        }
+
+        const res = await fetch('http://localhost:8080/workStatus?status='+newStatus, {
+            method: 'POST'
+        });
+
+        if (res.ok) {
+            alert('Статус успешно добавлен');
+            loadWorkStatus(); // обновляем список статусов
+        } else {
+            alert('Ошибка при добавлении статуса');
+        }
+
+        // Очистить поле ввода после добавления
+        document.getElementById('newStatus').value = '';
+    }
+
+    document.getElementById('createForm').addEventListener('submit', addStatus);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('http://localhost:8080/managers/admin-profile');
+            if (!res.ok) {
+                window.location.href = '/manager-auth';
+                return;
+            }
+            const result = await res.text();
+            if (result?.message === 'session is empty') {
+                window.location.href = '/manager-auth';
+                return;
+            }
+        } catch (e) {
+            window.location.href = '/manager-auth';
+            return;
+        }
+
+        loadWorkStatus();
+    });
+</script>
+
+</body>
+</html>

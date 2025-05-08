@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.shumilin.carService.human.status.workStatus.entity.WorkStatusEntity;
 import ru.shumilin.carService.human.status.workStatus.service.WorkStatusService;
 
+import java.util.List;
+
 @AllArgsConstructor
 @CrossOrigin
 @RestController
@@ -16,6 +18,11 @@ public class WorkStatusController {
     public String getStatusById(@RequestParam Integer id) {return workStatusService.findWorkStatusById(id).getStatus();}
     @GetMapping("/name")
     public String getStatusByName(@RequestParam String name){return workStatusService.findStatusByStatusName(name).getStatus();}
+
+    @GetMapping("/all")
+    public List<WorkStatusEntity> findAll(){
+        return workStatusService.findAll();
+    }
 
     @PostMapping
     public boolean saveStatus(@RequestParam String status){

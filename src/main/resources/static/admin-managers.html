@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Админ — Менеджеры</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .navbar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
+        }
+        .card-info {
+            margin-bottom: 0.5rem;
+        }
+        .label {
+            font-weight: 600;
+        }
+        .button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .button:hover {
+            background-color: #c0392b;
+        }
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/admin">Услуги</a>
+    <a href="/admin-service-requests">Заказы</a>
+    <a href="/admin-makers">Производители</a>
+    <a href="/admin-clients">Клиенты</a>
+    <a href="/admin-managers">Менеджеры</a>
+    <a href="/admin-mechanics">Механики</a>
+    <a href="/admin-service-status">Статусы заказов</a>
+    <a href="/admin-work-status">Статусы работы</a>
+</div>
+
+<div class="container">
+    <h1>Список менеджеров</h1>
+    <div id="managersContainer"></div>
+</div>
+
+<script>
+    async function loadManagers() {
+        const res = await fetch('http://localhost:8080/managers/all');
+        const managers = await res.json();
+        const container = document.getElementById('managersContainer');
+        container.innerHTML = '';
+
+        for (const manager of managers) {
+            const name = manager.name;
+            const login = manager.login;
+            const password = manager.password;
+            const salary = manager.salary;
+            const workStatus = manager.workStatus?.status || '—';
+
+            // Получаем заказы по ID менеджера
+            const ordersRes = await fetch(`http://localhost:8080/serviceDelivery/manager?id=${manager.id}`);
+            const orders = await ordersRes.json();
+            const ordersCount = Array.isArray(orders) ? orders.length : 0;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const deleteButtonDisabled = ordersCount > 0 ? 'disabled' : '';
+
+            card.innerHTML = `
+                <div class="card-info"><span class="label">ФИО:</span> ${name.surname} ${name.name} ${name.patronymic}</div>
+                <div class="card-info"><span class="label">Логин:</span> ${login}</div>
+                <div class="card-info"><span class="label">Пароль:</span> ${password}</div>
+                <div class="card-info"><span class="label">Статус:</span> ${workStatus}</div>
+                <div class="card-info"><span class="label">Зарплата:</span> ${salary} ₽</div>
+                <div class="card-info"><span class="label">Количество заказов:</span> ${ordersCount}</div>
+                <button class="button" ${deleteButtonDisabled} onclick="deleteManager(${manager.id})">Удалить</button>
+            `;
+
+            container.appendChild(card);
+        }
+    }
+
+    async function deleteManager(managerId) {
+        const res = await fetch(`http://localhost:8080/managers/${managerId}`, {
+            method: 'DELETE',
+        });
+
+        if (res.ok) {
+            alert('Менеджер успешно удалён');
+            loadManagers(); // обновляем список
+        } else {
+            alert('Ошибка при удалении менеджера');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('http://localhost:8080/managers/admin-profile');
+            if (!res.ok) {
+                window.location.href = '/manager-auth';
+                return;
+            }
+            const result = await res.text();
+            if (result?.message === 'session is empty') {
+                window.location.href = '/manager-auth';
+                return;
+            }
+        } catch (e) {
+            window.location.href = '/manager-auth';
+            return;
+        }
+
+        loadManagers();
+    });
+</script>
+
+</body>
+</html>
