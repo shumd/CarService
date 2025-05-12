@@ -1,268 +1,268 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Запись на ТО</title>
     <style>
-        /* Стили для навбара */
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f2f4f7;
+            color: #333;
         }
 
         .navbar {
-            background-color: #333;
-            overflow: hidden;
+            background-color: #1e1e2f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            color: white;
         }
 
         .navbar a {
-            float: left;
-            display: block;
             color: white;
-            text-align: center;
-            padding: 14px 20px;
             text-decoration: none;
+            margin-right: 20px;
+            transition: color 0.2s;
         }
 
         .navbar a:hover {
-            background-color: #575757;
+            color: #00b894;
         }
 
-        /* Стили для контейнера формы */
+        .navbar .left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar .right {
+            cursor: pointer;
+            color: #ff7675;
+        }
+
         .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
         }
 
-        .container h2 {
+        h2 {
             text-align: center;
             margin-bottom: 20px;
+        }
+
+        .greeting {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #2d3436;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
-        .form-group label {
+        label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
-        .form-group input,
-        .form-group select {
+        select, input[type="text"] {
             width: 100%;
             padding: 10px;
+            border-radius: 6px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            font-size: 15px;
             box-sizing: border-box;
         }
 
-        .form-group button {
+        button {
             width: 100%;
-            padding: 10px;
-            background-color: #333;
+            padding: 12px;
+            background-color: #00b894;
             color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
             font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
         }
 
-        .form-group button:hover {
-            background-color: #575757;
+        button:hover {
+            background-color: #019875;
         }
 
-        /* Приветствие */
-        .greeting {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #333;
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .navbar .left {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- Навбар -->
 <div class="navbar">
-    <a href="http://localhost:8080/profile">Профиль</a>
-    <a href="http://localhost:8080/">Запись на ТО</a>
-    <a id="logoutButton" style="float: right; cursor: pointer;">Выход</a>
+    <div class="left">
+        <a href="http://localhost:8080/profile">Профиль</a>
+        <a href="http://localhost:8080/">Запись на ТО</a>
+    </div>
+    <div class="right" id="logoutButton">Выход</div>
 </div>
 
-<!-- Контейнер для приветствия или формы -->
 <div class="container">
-    <div id="greeting" class="greeting"></div>
+    <div id="greeting" class="greeting">Загрузка профиля...</div>
     <h2>Запись на ТО</h2>
-    <form id="serviceForm" action="#" method="POST">
+
+    <form id="serviceForm">
         <div class="form-group">
-            <label for="car">Автомобиль:</label>
+            <label for="car">Автомобиль</label>
             <select id="car" name="car" required>
-                <option value="">Выберите автомобиль</option>
+                <option value="">Загрузка...</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="service-type">Тип услуги:</label>
+            <label for="service-type">Тип услуги</label>
             <select id="service-type" name="service-type" required>
-                <option value="">Выберите услугу</option>
+                <option value="">Загрузка...</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <button type="submit">Записаться</button>
-        </div>
+        <input type="hidden" id="clientId" />
+
+        <button type="submit">Записаться</button>
     </form>
-    <!-- Скрытый элемент для хранения ID клиента -->
-    <input type="hidden" id="clientId" value="">
 </div>
 
 <script>
-    // Функция для получения данных профиля
     async function fetchProfile() {
         try {
-            const response = await fetch('http://localhost:8080/clients/profile');
-            if (!response.ok) {
-                const errorData = await response.json();
-                if (errorData.message === 'session is null') {
-                    // Перенаправление на страницу авторизации
+            const res = await fetch('http://localhost:8080/clients/profile');
+            if (!res.ok) {
+                const data = await res.json();
+                if (data.message === 'session is null') {
                     window.location.href = 'http://localhost:8080/auth';
                     return;
                 }
-                throw new Error('Ошибка при получении профиля');
+                throw new Error('Ошибка получения профиля');
             }
 
-            const profileData = await response.json();
-            const fullName = `${profileData.name.surname} ${profileData.name.name} ${profileData.name.patronymic}`;
-            document.getElementById('greeting').innerText = `Привет, ${fullName}!`;
+            const profile = await res.json();
+            document.getElementById('greeting').textContent = `Здравствуйте, ${profile.name.surname} ${profile.name.name} ${profile.name.patronymic}!`;
+            document.getElementById('clientId').value = profile.id;
 
-            // Сохраняем clientId в скрытое поле
-            document.getElementById('clientId').value = profileData.id;
-
-            // Загрузка автомобилей в выпадающий список
             const carSelect = document.getElementById('car');
-            if (profileData.carEntities.length > 0) {
-                profileData.carEntities.forEach(car => {
-                    const option = document.createElement('option');
-                    option.value = car.id;
-                    option.textContent = `${car.maker.name} ${car.model} (${car.licensePlate})`;
-                    carSelect.appendChild(option);
-                });
+            carSelect.innerHTML = '';
+
+            if (profile.carEntities.length === 0) {
+                carSelect.innerHTML = '<option value="">Нет доступных автомобилей</option>';
             } else {
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'Нет доступных автомобилей';
-                carSelect.appendChild(option);
+                profile.carEntities.forEach(car => {
+                    const opt = document.createElement('option');
+                    opt.value = car.id;
+                    opt.textContent = `${car.maker.name} ${car.model} (${car.licensePlate})`;
+                    carSelect.appendChild(opt);
+                });
             }
-        } catch (error) {
-            console.error('Ошибка:', error);
-            alert('Не удалось загрузить профиль. Попробуйте позже.');
+
+        } catch (err) {
+            alert('Ошибка при загрузке профиля');
+            console.error(err);
         }
     }
 
-    // Функция для получения типов услуг
     async function fetchServices() {
         try {
-            const response = await fetch('http://localhost:8080/services/all');
-            if (!response.ok) {
-                throw new Error('Ошибка при получении списка услуг');
-            }
+            const res = await fetch('http://localhost:8080/services/all');
+            if (!res.ok) throw new Error('Ошибка получения услуг');
 
-            const services = await response.json();
-            const serviceSelect = document.getElementById('service-type');
+            const services = await res.json();
+            const select = document.getElementById('service-type');
+            select.innerHTML = '<option value="">Выберите услугу</option>';
 
             services.forEach(service => {
-                const option = document.createElement('option');
-                option.value = service.id;
-                option.textContent = `${service.name} (${service.price} руб.)`;
-                serviceSelect.appendChild(option);
+                const opt = document.createElement('option');
+                opt.value = service.id;
+                opt.textContent = `${service.name} (${service.price} руб.)`;
+                select.appendChild(opt);
             });
-        } catch (error) {
-            console.error('Ошибка:', error);
-            alert('Не удалось загрузить список услуг. Попробуйте позже.');
+        } catch (err) {
+            alert('Не удалось загрузить список услуг');
+            console.error(err);
         }
     }
 
-    // Обработчик для кнопки выхода
-    document.getElementById('logoutButton').addEventListener('click', async () => {
-        try {
-            const response = await fetch('http://localhost:8080/clients/logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+    async function submitServiceRequest(e) {
+        e.preventDefault();
 
-            if (response.ok) {
-                // Успешный выход, перенаправление на страницу авторизации
-                window.location.href = 'http://localhost:8080/auth';
-            } else {
-                throw new Error('Ошибка при выходе');
-            }
-        } catch (error) {
-            console.error('Ошибка:', error);
-            alert('Не удалось выйти. Попробуйте позже.');
-        }
-    });
+        const carId = document.getElementById('car').value;
+        const serviceId = document.getElementById('service-type').value;
+        const clientId = document.getElementById('clientId').value;
 
-    // Функция для отправки данных на сервер
-    async function submitServiceRequest(event) {
-        event.preventDefault(); // Предотвращаем стандартное поведение формы
+        const payload = {
+            carId: parseInt(carId),
+            serviceId: parseInt(serviceId),
+            clientId: parseInt(clientId),
+            mechanicId: -1,
+            managerId: -1,
+            serviceDeliveryStatusId: 1
+        };
 
         try {
-            // Получаем значения из формы
-            const carId = document.getElementById('car').value;
-            const serviceId = document.getElementById('service-type').value;
-            const clientId = document.getElementById('clientId').value;
-
-            // Формируем JSON-объект
-            const requestData = {
-                carId: parseInt(carId),
-                serviceId: parseInt(serviceId),
-                clientId: parseInt(clientId),
-                mechanicId: -1,
-                managerId: -1,
-                serviceDeliveryStatusId: 1
-            };
-
-            // Отправляем POST-запрос на сервер
-            const response = await fetch('http://localhost:8080/serviceDelivery', {
+            const res = await fetch('http://localhost:8080/serviceDelivery', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Ошибка при отправке данных');
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || 'Ошибка при отправке данных');
             }
 
-            // Успешная отправка
             alert('Вы успешно записались на ТО!');
-            document.getElementById('serviceForm').reset(); // Очищаем форму
-        } catch (error) {
-            console.error('Ошибка:', error);
-            alert('Не удалось записаться на ТО. Попробуйте позже.');
+            document.getElementById('serviceForm').reset();
+
+        } catch (err) {
+            alert('Ошибка при записи');
+            console.error(err);
         }
     }
 
-    // Загрузка данных при открытии страницы
+    async function logout() {
+        try {
+            await fetch('http://localhost:8080/clients/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            window.location.href = 'http://localhost:8080/auth';
+        } catch (err) {
+            alert('Ошибка при выходе');
+            console.error(err);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         fetchProfile();
         fetchServices();
-
-        // Добавляем обработчик для отправки формы
-        const form = document.getElementById('serviceForm');
-        form.addEventListener('submit', submitServiceRequest);
+        document.getElementById('serviceForm').addEventListener('submit', submitServiceRequest);
+        document.getElementById('logoutButton').addEventListener('click', logout);
     });
 </script>
 

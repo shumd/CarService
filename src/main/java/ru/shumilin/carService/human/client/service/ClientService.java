@@ -55,6 +55,9 @@ public class ClientService {
     public ClientEntity save(ClientEntity clientEntity){
         return clientRepository.save(clientEntity);
     }
+    public ClientEntity save(ClientRequest request){
+        return clientRepository.save(toEntity(request));
+    }
     public boolean login(String phoneNumber, String password){
         ClientEntity client = clientRepository.findByPhoneNumber(phoneNumber).orElseThrow(
                 () -> new ClientNotFoundException(

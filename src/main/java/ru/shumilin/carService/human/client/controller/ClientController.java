@@ -22,7 +22,7 @@ public class ClientController {
 
     @PostMapping
     public ClientEntity saveClient(@RequestBody ClientRequest clientRequest) {
-        return clientService.save(clientService.toEntity(clientRequest));
+        return clientService.save(clientRequest);
     }
 
     @GetMapping("/car/{id}")
@@ -73,7 +73,7 @@ public class ClientController {
 
     @PostMapping("/logout")
     public boolean logout(HttpSession session) {
-        session.removeAttribute("client");
+        session.removeAttribute("phoneNumber");
         return true;
     }
 }
