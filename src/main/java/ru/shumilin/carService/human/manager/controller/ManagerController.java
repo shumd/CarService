@@ -68,7 +68,7 @@ public class ManagerController {
     public String adminProfile(HttpSession session){
         String admin = (String) session.getAttribute("admin");
         if(admin == null){throw new RuntimeException("session is empty");}
-        return admin;
+        return "success";
     }
     @GetMapping("/profile")
     public ManagerEntity profile(HttpSession session){

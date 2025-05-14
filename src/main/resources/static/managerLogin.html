@@ -97,6 +97,16 @@
         loginError.style.display = loginInput.value.trim() ? 'none' : 'block';
     });
 
+    window.addEventListener('DOMContentLoaded', function () {
+            fetch('http://localhost:8080/managers/admin-logout', {
+                method: 'POST',
+                credentials: 'include' // если нужны куки (для авторизованных запросов)
+            })
+            .catch(error => {
+                console.error('Ошибка выхода админа:', error);
+            });
+        });
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         authError.style.display = 'none';
@@ -124,7 +134,7 @@
 
                     const adminData = await adminRes.text();
 
-                    if (!adminData.message || adminData.message !== "session is empty") {
+                    if (adminData === "success") {
                         window.location.href = 'http://localhost:8080/admin';
                     } else {
                         window.location.href = 'http://localhost:8080/manager';
