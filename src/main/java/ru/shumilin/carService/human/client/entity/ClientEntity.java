@@ -39,3 +39,4 @@ public class ClientEntity {
         }else throw new RuntimeException("This car already exists");
     }
 }
+

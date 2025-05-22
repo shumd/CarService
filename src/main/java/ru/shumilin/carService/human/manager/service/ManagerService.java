@@ -1,6 +1,7 @@
 package ru.shumilin.carService.human.manager.service;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,5 +82,8 @@ public class ManagerService {
         return res;
     }
 
-
+    @Transactional
+    public void updateSalary(int id, int amount){
+        repo.updateSalary(id, amount);
+    }
 }

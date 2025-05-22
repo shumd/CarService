@@ -84,4 +84,9 @@ public class ManagerController {
     public void adminLogout(HttpSession session){
         session.removeAttribute("admin");
     }
+
+    @PostMapping("/salary")
+    public void updateSalary(@RequestParam int id,@RequestParam int amount){
+        managerService.updateSalary(id,amount);
+    }
 }

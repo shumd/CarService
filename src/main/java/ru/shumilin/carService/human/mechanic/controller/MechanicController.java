@@ -44,6 +44,11 @@ public class MechanicController {
         return mechanicService.save(request);
     }
 
+    @PostMapping("/salary")
+    public void updateSalary(@RequestParam int id, @RequestParam int amount) {
+        mechanicService.updateSalary(id, amount);
+    }
+
     @DeleteMapping("/{id}")
     public boolean deleteMechanicById(@PathVariable long id) {
         return mechanicService.deleteMechanicById(id);

@@ -154,7 +154,7 @@
                 <p><strong>Услуга:</strong> ${item.service.name}</p>
                 <p><strong>Статус:</strong> ${item.serviceDeliveryStatus.status}</p>
                 <div class="action-buttons">
-                    <button onclick="confirmRequest(${item.id})">Подтвердить</button>
+                    <button onclick="confirmRequest(${item.id}, ${item.client.id}, ${item.car.id}, ${item.service.id})">Подтвердить</button>
                 </div>
             `;
             container.appendChild(card);
@@ -162,11 +162,11 @@
     }
 
     // Подтверждение заявки
-    async function confirmRequest(id) {
+    async function confirmRequest(id, clientId, carId, serviceId) {
         const requestData = {
-            carId: 1, // Пример, в реальности нужно брать из данных запроса
-            serviceId: 2, // Пример, в реальности нужно брать из данных запроса
-            clientId: 1, // Пример, в реальности нужно брать из данных запроса
+            carId: carId, // Пример, в реальности нужно брать из данных запроса
+            serviceId: serviceId, // Пример, в реальности нужно брать из данных запроса
+            clientId: clientId, // Пример, в реальности нужно брать из данных запроса
             mechanicId: -1,
             managerId: managerId,
             serviceDeliveryStatusId: 3

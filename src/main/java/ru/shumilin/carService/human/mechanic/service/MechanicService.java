@@ -1,5 +1,6 @@
 package ru.shumilin.carService.human.mechanic.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.shumilin.carService.human.mechanic.entity.MechanicEntity;
@@ -90,5 +91,10 @@ public class MechanicService {
     public List<MechanicEntity> findByWorkStatus(String status) {
         WorkStatusEntity workStatusEntity = workStatusService.findStatusByStatusName(status);
         return mechanicRepository.findAllByWorkStatus(workStatusEntity);
+    }
+
+    @Transactional
+    public void updateSalary(int id, int amount) {
+        mechanicRepository.updateMechanicSalary(id, amount);
     }
 }
